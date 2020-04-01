@@ -1,0 +1,33 @@
+{
+  "name": "@p233/rhythm",
+  "version": "1.0.0",
+  "description": "",
+  "main": "rhythm.scss",
+  "scripts": {
+    "test": "jest ./test/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/P233/rhythm.git"
+  },
+  "keywords": [
+    "sass",
+    "scss",
+    "vertical-rhythm",
+    "typography"
+  ],
+  "author": "Peiwen Lu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/P233/rhythm/issues"
+  },
+  "homepage": "https://github.com/P233/rhythm#readme",
+  "dependencies": {
+    "jest": "^25.2.4",
+    "sass": "^1.26.3",
+    "sass-true": "^5.0.0"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  }
+}
