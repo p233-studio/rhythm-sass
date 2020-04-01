@@ -22,12 +22,28 @@
     "url": "https://github.com/P233/rhythm/issues"
   },
   "homepage": "https://github.com/P233/rhythm#readme",
-  "dependencies": {
+  "devDependencies": {
+    "@p233/stylelint-config-scss": "^2.0.1",
+    "husky": "^4.2.3",
     "jest": "^25.2.4",
+    "lint-staged": "^10.1.1",
+    "prettier": "^2.0.2",
     "sass": "^1.26.3",
-    "sass-true": "^5.0.0"
+    "sass-true": "^5.0.0",
+    "stylelint": "^13.2.1"
   },
   "jest": {
     "testEnvironment": "node"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{scss}": [
+      "stylelint --fix",
+      "prettier --write"
+    ]
   }
 }
