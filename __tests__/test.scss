@@ -1,0 +1,48 @@
+@import "true";
+@import "./rhythm";
+
+@include test-module("Test helper functions:") {
+  @include test("_calc-baseline-from-bottom") {
+    $test: _calc-baseline-from-bottom(24px, 5, 0.112061);
+    $expect: (5 * 8 - 24) / 2 + 24px * 0.112061;
+    @include assert-equal($test, $expect);
+  }
+
+  @include test("_calc-baseline-offset") {
+    @include assert-equal(_calc-baseline-offset(3.33px), 3px);
+    @include assert-equal(_calc-baseline-offset(64.5px), 1px);
+  }
+
+  @include test("_calc-top-positive-size") {
+    @include assert-equal(_calc-top-positive-size(1, 0), 8px);
+    @include assert-equal(_calc-top-positive-size(1, 3px), 5px);
+    @include assert-equal(_calc-top-positive-size(5, 0), 40px);
+    @include assert-equal(_calc-top-positive-size(5, 7px), 33px);
+  }
+
+  @include test("_calc-top-negative-size") {
+    @include assert-equal(_calc-top-negative-size(-1, 0), -8px);
+    @include assert-equal(_calc-top-negative-size(-1, 3px), -3px);
+    @include assert-equal(_calc-top-negative-size(-5, 0), -40px);
+    @include assert-equal(_calc-top-negative-size(-5, 7px), -39px);
+  }
+
+  @include test("_calc-bottom-positive-size") {
+    @include assert-equal(_calc-bottom-positive-size(1, 0), 8px);
+    @include assert-equal(_calc-bottom-positive-size(1, 3px), 3px);
+    @include assert-equal(_calc-bottom-positive-size(5, 0), 40px);
+    @include assert-equal(_calc-bottom-positive-size(5, 7px), 39px);
+  }
+
+  @include test("_calc-bottom-negative-size") {
+    @include assert-equal(_calc-bottom-negative-size(-1, 0), -8px);
+    @include assert-equal(_calc-bottom-negative-size(-1, 3px), -5px);
+    @include assert-equal(_calc-bottom-negative-size(-5, 0), -40px);
+    @include assert-equal(_calc-bottom-negative-size(-5, 7px), -33px);
+  }
+
+  @include test("_calc-rhythms-size") {
+    @include assert-equal(_calc-rhythms-size(24px, 5, 0.112061, 0, "TOP"), 0);
+    @include assert-equal(_calc-rhythms-size(24px, 5, 0.112061, 0, "BOTTOM"), 0);
+  }
+}

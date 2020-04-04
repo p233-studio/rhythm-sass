@@ -4,7 +4,7 @@
   "description": "",
   "main": "rhythm.scss",
   "scripts": {
-    "test": "jest ./test/index.js"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -37,7 +37,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "lint-staged && npm run test"
     }
   },
   "lint-staged": {

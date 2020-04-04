@@ -1,3 +1,73 @@
-@forward "src/settings";
-@forward "src/functions";
-@forward "src/mixins";
+@use "sass:math";
+
+// Default variables
+// -----------------
+$rhythm-size: 8px !default;
+$baseline-raito: 0 !default;
+
+// Helper functions
+// ----------------
+@function _calc-baseline-from-bottom($font-size, $line-height-rhythms, $baseline-ratio) {
+  @return ($line-height-rhythms * $rhythm-size - $font-size) / 2 + $font-size *
+    $baseline-ratio;
+}
+
+@function _calc-baseline-offset($baseline-from-bottom) {
+  @return math.round($baseline-from-bottom % $rhythm-size);
+}
+
+@function _calc-top-positive-size($rhythm-steps, $baseline-offset) {
+  @return $rhythm-steps * $rhythm-size - $baseline-offset;
+}
+
+@function _calc-top-negative-size($rhythm-steps, $baseline-offset) {
+  @if ($baseline-offset == 0) {
+    @return $rhythm-steps * $rhythm-size;
+  }
+  @return ($rhythm-steps + 1) * $rhythm-size - $baseline-offset;
+}
+
+@function _calc-bottom-positive-size($rhythm-steps, $baseline-offset) {
+  @if ($baseline-offset == 0) {
+    @return $rhythm-steps * $rhythm-size;
+  }
+  @return ($rhythm-steps - 1) * $rhythm-size + $baseline-offset;
+}
+
+@function _calc-bottom-negative-size($rhythm-steps, $baseline-offset) {
+  @if ($baseline-offset == 0) {
+    @return $rhythm-steps * $rhythm-size;
+  }
+  @return $rhythm-steps * $rhythm-size + $baseline-offset;
+}
+
+@function _calc-rhythms-size(
+  $font-size,
+  $line-height-rhythms,
+  $baseline-ratio,
+  $rhythm-steps,
+  $direction
+) {
+  $_baseline-from-bottom: _calc-baseline-from-bottom(
+    $font-size,
+    $line-height-rhythms,
+    $baseline-ratio
+  );
+  $_baseline-offset: _calc-baseline-offset($_baseline-from-bottom);
+
+  @if direction == "TOP" {
+    @if $rhythm-steps > 0 {
+      @return _calc-top-positive-size($rhythm-steps, $_baseline-offset);
+    } @else if $rhythm-steps < 0 {
+      @return _calc-top-negative-size($rhythm-steps, $_baseline-offset);
+    }
+  } @else if direction == "BOTTOM" {
+    @if $rhythm-steps > 0 {
+      @return _calc-bottom-positive-size($rhythm-steps, $_baseline-offset);
+    } @else if $rhythm-steps < 0 {
+      @return _calc-bottom-negative-size($rhythm-steps, $_baseline-offset);
+    }
+  }
+
+  @return 0;
+}
