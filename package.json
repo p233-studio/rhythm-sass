@@ -1,5 +1,5 @@
 {
-  "name": "@p233/rhythm",
+  "name": "@p233/rhythm-sass",
   "version": "1.0.0",
   "description": "",
   "main": "rhythm.scss",
@@ -25,12 +25,12 @@
   "devDependencies": {
     "@p233/stylelint-config-scss": "^2.0.1",
     "husky": "^4.2.3",
-    "jest": "^25.2.4",
+    "jest": "^25.2.7",
     "lint-staged": "^10.1.1",
     "prettier": "^2.0.2",
     "sass": "^1.26.3",
     "sass-true": "^5.0.0",
-    "stylelint": "^13.2.1"
+    "stylelint": "^13.3.0"
   },
   "jest": {
     "testEnvironment": "node"
