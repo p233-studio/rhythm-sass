@@ -46,3 +46,9 @@
     @include assert-equal(_calc-rhythms-size(24px, 5, 0.112061, 0, "BOTTOM"), 0);
   }
 }
+
+@include test-module("Test functions:") {
+  @include test("rhythm") {
+    @include assert-equal(rhythm(5), 40px);
+  }
+}

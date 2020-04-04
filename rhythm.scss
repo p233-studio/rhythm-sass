@@ -22,21 +22,21 @@ $baseline-raito: 0 !default;
 
 @function _calc-top-negative-size($rhythm-steps, $baseline-offset) {
   @if ($baseline-offset == 0) {
-    @return $rhythm-steps * $rhythm-size;
+    @return rhythm($rhythm-steps);
   }
   @return ($rhythm-steps + 1) * $rhythm-size - $baseline-offset;
 }
 
 @function _calc-bottom-positive-size($rhythm-steps, $baseline-offset) {
   @if ($baseline-offset == 0) {
-    @return $rhythm-steps * $rhythm-size;
+    @return rhythm($rhythm-steps);
   }
   @return ($rhythm-steps - 1) * $rhythm-size + $baseline-offset;
 }
 
 @function _calc-bottom-negative-size($rhythm-steps, $baseline-offset) {
   @if ($baseline-offset == 0) {
-    @return $rhythm-steps * $rhythm-size;
+    @return rhythm($rhythm-steps);
   }
   @return $rhythm-steps * $rhythm-size + $baseline-offset;
 }
@@ -70,4 +70,10 @@ $baseline-raito: 0 !default;
   }
 
   @return 0;
+}
+
+// Functions
+// ----------------
+@function rhythm($rhythm-steps) {
+  @return $rhythm-steps * $rhythm-size;
 }
