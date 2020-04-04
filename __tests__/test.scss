@@ -2,6 +2,11 @@
 @import "./rhythm";
 
 @include test-module("Test helper functions:") {
+  @include test("_unit") {
+    @include assert-equal(_unit(36px), "px");
+    @include assert-equal(_unit(3.6rem), "rem");
+  }
+
   @include test("_calc-baseline-from-bottom") {
     $test: _calc-baseline-from-bottom(24px, 5, 0.112061);
     $expect: (5 * 8 - 24) / 2 + 24px * 0.112061;

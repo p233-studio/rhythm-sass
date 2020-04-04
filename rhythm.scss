@@ -1,4 +1,5 @@
 @use "sass:math";
+@use "sass:string";
 
 // Default variables
 // -----------------
@@ -7,6 +8,10 @@ $baseline-raito: 0 !default;
 
 // Helper functions
 // ----------------
+@function _unit($value) {
+  @return string.slice(#{$value * 0}, 2, -1);
+}
+
 @function _calc-baseline-from-bottom($font-size, $line-height-rhythms, $baseline-ratio) {
   @return ($line-height-rhythms * $rhythm-size - $font-size) / 2 + $font-size *
     $baseline-ratio;
