@@ -13,13 +13,28 @@ $global-baseline-raito: 0 !default;
   @return string.slice(#{$value * 0}, 2, -1);
 }
 
-@function _calc-baseline-from-bottom($font-size, $line-height-rhythm, $baseline-ratio) {
-  @return ($line-height-rhythm * $global-rhythm-size - $font-size) / 2 + $font-size *
-    $baseline-ratio;
+@function _calc-baseline-from-top($font-size, $line-height-rhythm, $baseline-ratio) {
+  @return math.round(
+    ($line-height-rhythm * $global-rhythm-size - $font-size) / 2 + $font-size *
+      (1 - $baseline-ratio)
+  );
 }
 
-@function _calc-baseline-offset($baseline-from-bottom) {
-  @return math.round($baseline-from-bottom % $global-rhythm-size);
+@function _calc-baseline-from-bottom($font-size, $line-height-rhythm, $baseline-ratio) {
+  @return math.round(
+    ($line-height-rhythm * $global-rhythm-size - $font-size) / 2 + $font-size *
+      $baseline-ratio
+  );
+}
+
+@function _calc-baseline-offset($font-size, $line-height-rhythm, $baseline-ratio) {
+  $_baseline-from-bottom: _calc-baseline-from-bottom(
+    $font-size,
+    $line-height-rhythm,
+    $baseline-ratio
+  );
+
+  @return $_baseline-from-bottom % $global-rhythm-size;
 }
 
 @function _calc-top-rhythm-size($rhythm-steps, $baseline-offset) {
@@ -28,11 +43,11 @@ $global-baseline-raito: 0 !default;
   }
 
   @if $rhythm-steps > 0 {
-    @return $rhythm-steps * $global-rhythm-size - $baseline-offset;
+    @return ($rhythm-steps - 1) * $global-rhythm-size + $baseline-offset;
   }
 
   @if $rhythm-steps < 0 {
-    @return ($rhythm-steps + 1) * $global-rhythm-size - $baseline-offset;
+    @return -(math.abs($rhythm-steps) * $global-rhythm-size - $baseline-offset);
   }
 
   @return 0;
@@ -44,14 +59,34 @@ $global-baseline-raito: 0 !default;
   }
 
   @if $rhythm-steps > 0 {
-    @return ($rhythm-steps - 1) * $global-rhythm-size + $baseline-offset;
+    @return $rhythm-steps * $global-rhythm-size - $baseline-offset;
   }
 
   @if $rhythm-steps < 0 {
-    @return $rhythm-steps * $global-rhythm-size + $baseline-offset;
+    @return -((math.abs($rhythm-steps) - 1) * $global-rhythm-size + $baseline-offset);
   }
 
   @return 0;
+}
+
+@function _calc-rhythm-size-between($top-font-map, $bottom-font-map, $rhythm-steps) {
+  $_top-font-baseline-offset: _calc-baseline-offset(
+    map.get($top-font-map, font-size),
+    map.get($top-font-map, line-height-rhythm),
+    map.get($top-font-map, baseline-ratio) or $global-baseline-raito
+  );
+  $_top-font-bottom-rhythm-size: _calc-bottom-rhythm-size(
+    $rhythm-steps,
+    $_top-font-baseline-offset
+  );
+
+  $_bottom-font-baseline-from-top: _calc-baseline-from-top(
+    map.get($bottom-font-map, font-size),
+    map.get($bottom-font-map, line-height-rhythm),
+    map.get($bottom-font-map, baseline-ratio) or $global-baseline-raito
+  );
+
+  @return $_top-font-bottom-rhythm-size - $_bottom-font-baseline-from-top;
 }
 
 // Functions
@@ -61,23 +96,29 @@ $global-baseline-raito: 0 !default;
 }
 
 @function top-rhythm-for($font-map, $rhythm-steps) {
-  $_baseline-from-bottom: _calc-baseline-from-bottom(
+  $_baseline-offset: _calc-baseline-offset(
     map.get($font-map, font-size),
     map.get($font-map, line-height-rhythm),
     map.get($font-map, baseline-ratio) or $global-baseline-raito
   );
-  $_baseline-offset: _calc-baseline-offset($_baseline-from-bottom);
 
   @return _calc-top-rhythm-size($rhythm-steps, $_baseline-offset);
 }
 
 @function bottom-rhythm-for($font-map, $rhythm-steps) {
-  $_baseline-from-bottom: _calc-baseline-from-bottom(
+  $_baseline-offset: _calc-baseline-offset(
     map.get($font-map, font-size),
     map.get($font-map, line-height-rhythm),
     map.get($font-map, baseline-ratio) or $global-baseline-raito
   );
-  $_baseline-offset: _calc-baseline-offset($_baseline-from-bottom);
 
   @return _calc-bottom-rhythm-size($rhythm-steps, $_baseline-offset);
+}
+
+@function top-rhythm-between($current-font-map, $target-font-map, $rhythm-steps) {
+  @return _calc-rhythm-size-between($target-font-map, $current-font-map, $rhythm-steps);
+}
+
+@function bottom-rhythm-between($current-font-map, $target-font-map, $rhythm-steps) {
+  @return _calc-rhythm-size-between($current-font-map, $target-font-map, $rhythm-steps);
 }
