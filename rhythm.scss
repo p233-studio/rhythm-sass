@@ -2,8 +2,8 @@
 @use "sass:math";
 @use "sass:string";
 
-// Default variables
-// -----------------
+// Global variables
+// ----------------
 $global-rhythm-size: 8px !default;
 $global-baseline-raito: 0 !default;
 
@@ -13,80 +13,27 @@ $global-baseline-raito: 0 !default;
   @return string.slice(#{$value * 0}, 2, -1);
 }
 
-@function _calc-baseline-from-top($font-size, $line-height-rhythm, $baseline-ratio) {
+@function _calc-baseline-from-bottom($font-map) {
+  $_font-size: map.get($font-map, font-size);
+  $_line-height-rhythm: map.get($font-map, line-height-rhythm);
+  $_baseline-ratio: map.get($font-map, baseline-ratio) or $global-baseline-raito;
+
   @return math.round(
-    ($line-height-rhythm * $global-rhythm-size - $font-size) / 2 + $font-size *
-      (1 - $baseline-ratio)
+    ($_line-height-rhythm * $global-rhythm-size - $_font-size) / 2 + $_font-size *
+      $_baseline-ratio
   );
 }
 
-@function _calc-baseline-from-bottom($font-size, $line-height-rhythm, $baseline-ratio) {
-  @return math.round(
-    ($line-height-rhythm * $global-rhythm-size - $font-size) / 2 + $font-size *
-      $baseline-ratio
-  );
+@function _calc-baseline-from-top($font-map) {
+  $_line-height: map.get($font-map, line-height-rhythm) * $global-rhythm-size;
+
+  @return $_line-height - _calc-baseline-from-bottom($font-map);
 }
 
-@function _calc-baseline-offset($font-size, $line-height-rhythm, $baseline-ratio) {
-  $_baseline-from-bottom: _calc-baseline-from-bottom(
-    $font-size,
-    $line-height-rhythm,
-    $baseline-ratio
-  );
+@function _calc-baseline-offset($font-map) {
+  $_baseline-from-bottom: _calc-baseline-from-bottom($font-map);
 
   @return $_baseline-from-bottom % $global-rhythm-size;
-}
-
-@function _calc-top-rhythm-size($rhythm-steps, $baseline-offset) {
-  @if $baseline-offset == 0 {
-    @return rhythm($rhythm-steps);
-  }
-
-  @if $rhythm-steps > 0 {
-    @return ($rhythm-steps - 1) * $global-rhythm-size + $baseline-offset;
-  }
-
-  @if $rhythm-steps < 0 {
-    @return -(math.abs($rhythm-steps) * $global-rhythm-size - $baseline-offset);
-  }
-
-  @return 0;
-}
-
-@function _calc-bottom-rhythm-size($rhythm-steps, $baseline-offset) {
-  @if $baseline-offset == 0 {
-    @return rhythm($rhythm-steps);
-  }
-
-  @if $rhythm-steps > 0 {
-    @return $rhythm-steps * $global-rhythm-size - $baseline-offset;
-  }
-
-  @if $rhythm-steps < 0 {
-    @return -((math.abs($rhythm-steps) - 1) * $global-rhythm-size + $baseline-offset);
-  }
-
-  @return 0;
-}
-
-@function _calc-rhythm-size-between($top-font-map, $bottom-font-map, $rhythm-steps) {
-  $_top-font-baseline-offset: _calc-baseline-offset(
-    map.get($top-font-map, font-size),
-    map.get($top-font-map, line-height-rhythm),
-    map.get($top-font-map, baseline-ratio) or $global-baseline-raito
-  );
-  $_top-font-bottom-rhythm-size: _calc-bottom-rhythm-size(
-    $rhythm-steps,
-    $_top-font-baseline-offset
-  );
-
-  $_bottom-font-baseline-from-top: _calc-baseline-from-top(
-    map.get($bottom-font-map, font-size),
-    map.get($bottom-font-map, line-height-rhythm),
-    map.get($bottom-font-map, baseline-ratio) or $global-baseline-raito
-  );
-
-  @return $_top-font-bottom-rhythm-size - $_bottom-font-baseline-from-top;
 }
 
 // Functions
@@ -95,30 +42,41 @@ $global-baseline-raito: 0 !default;
   @return $rhythm-steps * $global-rhythm-size;
 }
 
-@function top-rhythm-for($font-map, $rhythm-steps) {
-  $_baseline-offset: _calc-baseline-offset(
-    map.get($font-map, font-size),
-    map.get($font-map, line-height-rhythm),
-    map.get($font-map, baseline-ratio) or $global-baseline-raito
-  );
+@function top-rhythm($font-map, $rhythm-steps) {
+  $_baseline-offset: _calc-baseline-offset($font-map);
 
-  @return _calc-top-rhythm-size($rhythm-steps, $_baseline-offset);
+  @if $_baseline-offset == 0 {
+    @return rhythm($rhythm-steps);
+  } @else if $rhythm-steps > 0 {
+    @return ($rhythm-steps - 1) * $global-rhythm-size + $_baseline-offset;
+  } @else if $rhythm-steps < 0 {
+    @return -(math.abs($rhythm-steps) * $global-rhythm-size - $_baseline-offset);
+  } @else {
+    @return 0;
+  }
 }
 
-@function bottom-rhythm-for($font-map, $rhythm-steps) {
-  $_baseline-offset: _calc-baseline-offset(
-    map.get($font-map, font-size),
-    map.get($font-map, line-height-rhythm),
-    map.get($font-map, baseline-ratio) or $global-baseline-raito
-  );
+@function bottom-rhythm($font-map, $rhythm-steps) {
+  $_baseline-offset: _calc-baseline-offset($font-map);
 
-  @return _calc-bottom-rhythm-size($rhythm-steps, $_baseline-offset);
+  @if $_baseline-offset == 0 {
+    @return rhythm($rhythm-steps);
+  } @else if $rhythm-steps > 0 {
+    @return $rhythm-steps * $global-rhythm-size - $_baseline-offset;
+  } @else if $rhythm-steps < 0 {
+    @return -((math.abs($rhythm-steps) - 1) * $global-rhythm-size + $_baseline-offset);
+  } @else {
+    @return 0;
+  }
 }
 
-@function top-rhythm-between($current-font-map, $target-font-map, $rhythm-steps) {
-  @return _calc-rhythm-size-between($target-font-map, $current-font-map, $rhythm-steps);
-}
+@function mid-rhythm($top-font-map, $bottom-font-map, $rhythm-steps) {
+  @if $rhythm-steps < 1 {
+    @error "The $rhythm-steps between two elements must larger or equal to 1, but the given value is #{$rhythm-steps}.";
+  }
 
-@function bottom-rhythm-between($current-font-map, $target-font-map, $rhythm-steps) {
-  @return _calc-rhythm-size-between($current-font-map, $target-font-map, $rhythm-steps);
+  $_top-font-bottom-rhythm: bottom-rhythm($top-font-map, $rhythm-steps);
+  $_bottom-font-baseline-from-top: _calc-baseline-from-top($bottom-font-map);
+
+  @return $_top-font-bottom-rhythm - $_bottom-font-baseline-from-top;
 }
