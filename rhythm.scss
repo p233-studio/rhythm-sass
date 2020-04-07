@@ -38,39 +38,39 @@ $global-baseline-raito: 0 !default;
 
 // Functions
 // ----------------
-@function rhythm($rhythm-steps) {
-  @return $rhythm-steps * $global-rhythm-size;
+@function rhythm($rhythm-steps, $offset: 0) {
+  @return $rhythm-steps * $global-rhythm-size + $offset;
 }
 
-@function top-rhythm($font-map, $rhythm-steps) {
+@function top-rhythm($font-map, $rhythm-steps, $offset: 0) {
   $_baseline-offset: _calc-baseline-offset($font-map);
 
   @if $_baseline-offset == 0 {
-    @return rhythm($rhythm-steps);
+    @return rhythm($rhythm-steps, $offset);
   } @else if $rhythm-steps > 0 {
-    @return ($rhythm-steps - 1) * $global-rhythm-size + $_baseline-offset;
+    @return ($rhythm-steps - 1) * $global-rhythm-size + $_baseline-offset + $offset;
   } @else if $rhythm-steps < 0 {
-    @return -(math.abs($rhythm-steps) * $global-rhythm-size - $_baseline-offset);
+    @return -(math.abs($rhythm-steps) * $global-rhythm-size - $_baseline-offset) + $offset;
   } @else {
-    @return 0;
+    @return 0 + $offset;
   }
 }
 
-@function bottom-rhythm($font-map, $rhythm-steps) {
+@function bottom-rhythm($font-map, $rhythm-steps, $offset: 0) {
   $_baseline-offset: _calc-baseline-offset($font-map);
 
   @if $_baseline-offset == 0 {
-    @return rhythm($rhythm-steps);
+    @return rhythm($rhythm-steps, $offset);
   } @else if $rhythm-steps > 0 {
-    @return $rhythm-steps * $global-rhythm-size - $_baseline-offset;
+    @return $rhythm-steps * $global-rhythm-size - $_baseline-offset + $offset;
   } @else if $rhythm-steps < 0 {
-    @return -((math.abs($rhythm-steps) - 1) * $global-rhythm-size + $_baseline-offset);
+    @return -((math.abs($rhythm-steps) - 1) * $global-rhythm-size + $_baseline-offset) + $offset;
   } @else {
-    @return 0;
+    @return 0 + $offset;
   }
 }
 
-@function mid-rhythm($top-font-map, $bottom-font-map, $rhythm-steps) {
+@function mid-rhythm($top-font-map, $bottom-font-map, $rhythm-steps, $offset: 0) {
   @if $rhythm-steps < 1 {
     @error "The $rhythm-steps between two elements must larger or equal to 1, but the given value is #{$rhythm-steps}.";
   }
@@ -78,5 +78,5 @@ $global-baseline-raito: 0 !default;
   $_top-font-bottom-rhythm: bottom-rhythm($top-font-map, $rhythm-steps);
   $_bottom-font-baseline-from-top: _calc-baseline-from-top($bottom-font-map);
 
-  @return $_top-font-bottom-rhythm - $_bottom-font-baseline-from-top;
+  @return $_top-font-bottom-rhythm - $_bottom-font-baseline-from-top + $offset;
 }

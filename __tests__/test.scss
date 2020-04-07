@@ -47,25 +47,41 @@ $font-map-5: (
 @include test-module("Test functions:") {
   @include test("rhythm") {
     @include assert-equal(rhythm(5), 40px);
+    @include assert-equal(rhythm(5, -1px), 39px);
+    @include assert-equal(rhythm(5, 1px), 41px);
   }
 
   @include test("top-rhythm") {
     @include assert-equal(top-rhythm($font-map-3, 3), 21px);
     @include assert-equal(top-rhythm($font-map-4, 3), 21px);
+    @include assert-equal(top-rhythm($font-map-4, 3, -1px), 20px);
+    @include assert-equal(top-rhythm($font-map-4, 3, 1px), 22px);
     @include assert-equal(top-rhythm($font-map-3, -3), -19px);
     @include assert-equal(top-rhythm($font-map-4, -3), -19px);
+    @include assert-equal(top-rhythm($font-map-4, -3, -1px), -20px);
+    @include assert-equal(top-rhythm($font-map-4, -3, 1px), -18px);
     @include assert-equal(top-rhythm($font-map-4, 0), 0);
+    @include assert-equal(top-rhythm($font-map-4, 0, -1px), -1px);
+    @include assert-equal(top-rhythm($font-map-4, 0, 1px), 1px);
   }
 
   @include test("bottom-rhythm") {
     @include assert-equal(bottom-rhythm($font-map-3, 3), 19px);
     @include assert-equal(bottom-rhythm($font-map-4, 3), 19px);
+    @include assert-equal(bottom-rhythm($font-map-4, 3, -1px), 18px);
+    @include assert-equal(bottom-rhythm($font-map-4, 3, 1px), 20px);
     @include assert-equal(bottom-rhythm($font-map-3, -3), -21px);
     @include assert-equal(bottom-rhythm($font-map-4, -3), -21px);
+    @include assert-equal(bottom-rhythm($font-map-4, -3, -1px), -22px);
+    @include assert-equal(bottom-rhythm($font-map-4, -3, 1px), -20px);
     @include assert-equal(bottom-rhythm($font-map-4, 0), 0);
+    @include assert-equal(bottom-rhythm($font-map-4, 0, -1px), -1px);
+    @include assert-equal(bottom-rhythm($font-map-4, 0, 1px), 1px);
   }
 
   @include test("mid-rhythm") {
     @include assert-equal(mid-rhythm($font-map-3, $font-map-5, 3), 6px);
+    @include assert-equal(mid-rhythm($font-map-3, $font-map-5, 3, -1px), 5px);
+    @include assert-equal(mid-rhythm($font-map-3, $font-map-5, 3, 1px), 7px);
   }
 }
