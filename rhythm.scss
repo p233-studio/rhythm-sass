@@ -17,11 +17,10 @@ $global-baseline-raito: 0 !default;
   $_font-size: map.get($font-map, font-size);
   $_line-height-rhythm: map.get($font-map, line-height-rhythm);
   $_baseline-ratio: map.get($font-map, baseline-ratio) or $global-baseline-raito;
+  $_half-space: ($_line-height-rhythm * $global-rhythm-size - $_font-size) / 2;
+  $_baseline-height: $_font-size * $_baseline-ratio;
 
-  @return math.round(
-    ($_line-height-rhythm * $global-rhythm-size - $_font-size) / 2 + $_font-size *
-      $_baseline-ratio
-  );
+  @return math.round($_half-space + $_baseline-height);
 }
 
 @function _calc-baseline-from-top($font-map) {
