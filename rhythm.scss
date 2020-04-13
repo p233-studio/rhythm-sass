@@ -35,10 +35,20 @@ $global-baseline-raito: 0 !default;
   @return $_baseline-from-bottom % $global-rhythm-size;
 }
 
+@function _calc-offset($rhythm, $offset) {
+  @if $offset == 0 {
+    @return $rhythm;
+  } @else if _unit($rhythm) == _unit($offset) {
+    @return $rhythm + $offset;
+  } @else {
+    @return calc(#{$rhythm} - #{$offset});
+  }
+}
+
 // Functions
 // ----------------
 @function rhythm($rhythm-steps, $offset: 0) {
-  @return $rhythm-steps * $global-rhythm-size + $offset;
+  @return _calc-offset($rhythm-steps * $global-rhythm-size, $offset);
 }
 
 @function top-rhythm($font-map, $rhythm-steps, $offset: 0) {
@@ -47,11 +57,15 @@ $global-baseline-raito: 0 !default;
   @if $_baseline-offset == 0 {
     @return rhythm($rhythm-steps, $offset);
   } @else if $rhythm-steps > 0 {
-    @return ($rhythm-steps - 1) * $global-rhythm-size + $_baseline-offset + $offset;
+    $_rhythm: ($rhythm-steps - 1) * $global-rhythm-size + $_baseline-offset;
+
+    @return _calc-offset($_rhythm, $offset);
   } @else if $rhythm-steps < 0 {
-    @return -(math.abs($rhythm-steps) * $global-rhythm-size - $_baseline-offset) + $offset;
+    $_rhythm: -(math.abs($rhythm-steps) * $global-rhythm-size - $_baseline-offset);
+
+    @return _calc-offset($_rhythm, $offset);
   } @else {
-    @return 0 + $offset;
+    @return $offset;
   }
 }
 
@@ -61,11 +75,15 @@ $global-baseline-raito: 0 !default;
   @if $_baseline-offset == 0 {
     @return rhythm($rhythm-steps, $offset);
   } @else if $rhythm-steps > 0 {
-    @return $rhythm-steps * $global-rhythm-size - $_baseline-offset + $offset;
+    $_rhythm: $rhythm-steps * $global-rhythm-size - $_baseline-offset;
+
+    @return _calc-offset($_rhythm, $offset);
   } @else if $rhythm-steps < 0 {
-    @return -((math.abs($rhythm-steps) - 1) * $global-rhythm-size + $_baseline-offset) + $offset;
+    $_rhythm: -((math.abs($rhythm-steps) - 1) * $global-rhythm-size + $_baseline-offset);
+
+    @return _calc-offset($_rhythm, $offset);
   } @else {
-    @return 0 + $offset;
+    @return $offset;
   }
 }
 
@@ -76,6 +94,7 @@ $global-baseline-raito: 0 !default;
 
   $_top-font-bottom-rhythm: bottom-rhythm($top-font-map, $rhythm-steps);
   $_bottom-font-baseline-from-top: _calc-baseline-from-top($bottom-font-map);
+  $_rhythm: $_top-font-bottom-rhythm - $_bottom-font-baseline-from-top;
 
-  @return $_top-font-bottom-rhythm - $_bottom-font-baseline-from-top + $offset;
+  @return _calc-offset($_rhythm, $offset);
 }
