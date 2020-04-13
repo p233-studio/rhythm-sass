@@ -1,35 +1,30 @@
 @import "true";
 @import "./rhythm";
 
-$global-baseline-raito: 0.112061 !global;
+$global-baseline: 0.112061 !global;
 $font-map-1: (
   font-size: 24px,
-  line-height-rhythm: 5
+  line-height: 5,
 );
 $font-map-2: (
   font-size: 16px,
-  line-height-rhythm: 3
+  line-height: 3,
 );
 $font-map-3: (
   font-size: 17px,
-  line-height-rhythm: 3,
-  baseline-ratio: 0.112061
+  line-height: 3,
+  baseline: 0.112061,
 );
 $font-map-4: (
   font-size: 17px,
-  line-height-rhythm: 3
+  line-height: 3,
 );
 $font-map-5: (
   font-size: 12px,
-  line-height-rhythm: 2
+  line-height: 2,
 );
 
 @include test-module("Test helper functions:") {
-  @include test("_unit") {
-    @include assert-equal(_unit(36px), "px");
-    @include assert-equal(_unit(3.6rem), "rem");
-  }
-
   @include test("_calc-baseline-from-bottom") {
     @include assert-equal(_calc-baseline-from-bottom($font-map-1), 11px);
   }

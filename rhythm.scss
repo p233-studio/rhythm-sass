@@ -4,27 +4,23 @@
 
 // Global variables
 // ----------------
+$global-baseline: 0 !default;
 $global-rhythm-size: 8px !default;
-$global-baseline-raito: 0 !default;
 
 // Helper functions
 // ----------------
-@function _unit($value) {
-  @return string.slice(#{$value * 0}, 2, -1);
-}
-
 @function _calc-baseline-from-bottom($font-map) {
   $_font-size: map.get($font-map, font-size);
-  $_line-height-rhythm: map.get($font-map, line-height-rhythm);
-  $_baseline-ratio: map.get($font-map, baseline-ratio) or $global-baseline-raito;
-  $_half-space: ($_line-height-rhythm * $global-rhythm-size - $_font-size) / 2;
-  $_baseline-height: $_font-size * $_baseline-ratio;
+  $_line-height: map.get($font-map, line-height);
+  $_baseline: map.get($font-map, baseline) or $global-baseline;
+  $_half-space: ($_line-height * $global-rhythm-size - $_font-size) / 2;
+  $_baseline-height: $_font-size * $_baseline;
 
   @return math.round($_half-space + $_baseline-height);
 }
 
 @function _calc-baseline-from-top($font-map) {
-  $_line-height: map.get($font-map, line-height-rhythm) * $global-rhythm-size;
+  $_line-height: map.get($font-map, line-height) * $global-rhythm-size;
 
   @return $_line-height - _calc-baseline-from-bottom($font-map);
 }
@@ -38,7 +34,7 @@ $global-baseline-raito: 0 !default;
 @function _calc-offset($rhythm, $offset) {
   @if $offset == 0 {
     @return $rhythm;
-  } @else if _unit($rhythm) == _unit($offset) {
+  } @else if math.unit($rhythm) == math.unit($offset) {
     @return $rhythm + $offset;
   } @else {
     @return calc(#{$rhythm} - #{$offset});
