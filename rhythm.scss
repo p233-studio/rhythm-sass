@@ -3,13 +3,17 @@
 @use "sass:meta";
 @use "sass:list";
 
-// Global variables
-// ----------------
+// ------------------ //
+//  Global Variables  //
+// ------------------ //
+
 $global-baseline: 0 !default;
 $global-rhythm-size: 8px !default;
 
-// Helper functions
-// ----------------
+// ------------------ //
+//  Helper Functions  //
+// ------------------ //
+
 @function _first($list) {
   @return list.nth($list, 1);
 }
@@ -28,9 +32,22 @@ $global-rhythm-size: 8px !default;
   @return $_result;
 }
 
+@function _is-integer($value) {
+  @return meta.type-of($value) == number and math.is-unitless($value) and $value % 1 == 0;
+}
+
 @function _calc-baseline-from-bottom($font-map) {
   $_font-size: map.get($font-map, font-size);
   $_line-height: map.get($font-map, line-height);
+
+  @if meta.type-of($_font-size) != number {
+    @error "Invalid `font-size` value: #{$_font-size}.";
+  }
+
+  @if not _is-integer($_line-height) {
+    @error "Invalid `line-height` value: #{$_line-height}. `line-height` represents the numbers of rhythm grids, it must be unitless integer.";
+  }
+
   $_baseline: map.get($font-map, baseline) or $global-baseline;
   $_half-space: ($_line-height * $global-rhythm-size - $_font-size) / 2;
   $_baseline-height: $_font-size * $_baseline;
@@ -60,6 +77,18 @@ $global-rhythm-size: 8px !default;
   }
 }
 
+// ---------------------- //
+//  Validation Functions  //
+// ---------------------- //
+
+@function _validate-rhythm-grids($value) {
+  @if _is-integer($value) {
+    @return $value;
+  } @else {
+    @error "Invalid `$rhythm-grids` value: #{$value}. It must be unitless integer.";
+  }
+}
+
 @function _validate-property($property-placeholder, $property) {
   @if not $property-placeholder or $property-placeholder == $property {
     @return $property;
@@ -68,62 +97,72 @@ $global-rhythm-size: 8px !default;
   }
 }
 
-// Functions
-// ----------------
-@function rhythm($rhythm-steps, $offset: 0) {
-  @return _calc-offset($rhythm-steps * $global-rhythm-size, $offset);
+// ----------- //
+//  Functions  //
+// ----------- //
+
+@function rhythm($rhythm-grids, $offset: 0) {
+  $_rhythm-grids: _validate-rhythm-grids($rhythm-grids);
+
+  @return _calc-offset($_rhythm-grids * $global-rhythm-size, $offset);
 }
 
-@function top-rhythm($font-map, $rhythm-steps, $offset: 0) {
+@function top-rhythm($font-map, $rhythm-grids, $offset: 0) {
+  $_rhythm-grids: _validate-rhythm-grids($rhythm-grids);
   $_baseline-offset: _calc-baseline-offset($font-map);
 
   @if $_baseline-offset == 0 {
-    @return rhythm($rhythm-steps, $offset);
-  } @else if $rhythm-steps > 0 {
-    $_rhythm: ($rhythm-steps - 1) * $global-rhythm-size + $_baseline-offset;
+    @return rhythm($_rhythm-grids, $offset);
+  } @else if $_rhythm-grids > 0 {
+    $_size: ($_rhythm-grids - 1) * $global-rhythm-size + $_baseline-offset;
 
-    @return _calc-offset($_rhythm, $offset);
-  } @else if $rhythm-steps < 0 {
-    $_rhythm: -(math.abs($rhythm-steps) * $global-rhythm-size - $_baseline-offset);
+    @return _calc-offset($_size, $offset);
+  } @else if $_rhythm-grids < 0 {
+    $_size: -(math.abs($_rhythm-grids) * $global-rhythm-size - $_baseline-offset);
 
-    @return _calc-offset($_rhythm, $offset);
+    @return _calc-offset($_size, $offset);
   } @else {
     @return $offset;
   }
 }
 
-@function bottom-rhythm($font-map, $rhythm-steps, $offset: 0) {
+@function bottom-rhythm($font-map, $rhythm-grids, $offset: 0) {
+  $_rhythm-grids: _validate-rhythm-grids($rhythm-grids);
   $_baseline-offset: _calc-baseline-offset($font-map);
 
   @if $_baseline-offset == 0 {
-    @return rhythm($rhythm-steps, $offset);
-  } @else if $rhythm-steps > 0 {
-    $_rhythm: $rhythm-steps * $global-rhythm-size - $_baseline-offset;
+    @return rhythm($_rhythm-grids, $offset);
+  } @else if $_rhythm-grids > 0 {
+    $_size: $_rhythm-grids * $global-rhythm-size - $_baseline-offset;
 
-    @return _calc-offset($_rhythm, $offset);
-  } @else if $rhythm-steps < 0 {
-    $_rhythm: -((math.abs($rhythm-steps) - 1) * $global-rhythm-size + $_baseline-offset);
+    @return _calc-offset($_size, $offset);
+  } @else if $_rhythm-grids < 0 {
+    $_size: -((math.abs($_rhythm-grids) - 1) * $global-rhythm-size + $_baseline-offset);
 
-    @return _calc-offset($_rhythm, $offset);
+    @return _calc-offset($_size, $offset);
   } @else {
     @return $offset;
   }
 }
 
-@function mid-rhythm($top-font-map, $bottom-font-map, $rhythm-steps, $offset: 0) {
-  @if $rhythm-steps < 1 {
-    @error "The $rhythm-steps between two elements must larger or equal to 1, but the given value is #{$rhythm-steps}.";
+@function mid-rhythm($top-font-map, $bottom-font-map, $rhythm-grids, $offset: 0) {
+  $_rhythm-grids: _validate-rhythm-grids($rhythm-grids);
+
+  @if $_rhythm-grids >= 1 {
+    $_top-font-bottom-rhythm: bottom-rhythm($top-font-map, $_rhythm-grids);
+    $_bottom-font-baseline-from-top: _calc-baseline-from-top($bottom-font-map);
+    $_size: $_top-font-bottom-rhythm - $_bottom-font-baseline-from-top;
+
+    @return _calc-offset($_size, $offset);
+  } @else {
+    @error "Invalid `$rhythm-grids` value: #{$rhythm-grids}. The `$rhythm-grids` between two elements must larger or equal to 1.";
   }
-
-  $_top-font-bottom-rhythm: bottom-rhythm($top-font-map, $rhythm-steps);
-  $_bottom-font-baseline-from-top: _calc-baseline-from-top($bottom-font-map);
-  $_rhythm: $_top-font-bottom-rhythm - $_bottom-font-baseline-from-top;
-
-  @return _calc-offset($_rhythm, $offset);
 }
 
-// Mixins
-// ----------------
+// -------- //
+//  Mixins  //
+// -------- //
+
 @mixin font($font-map, $properties-map) {
   line-height: rhythm(map.get($font-map, line-height));
 
@@ -141,7 +180,6 @@ $global-rhythm-size: 8px !default;
       $_top-property: _validate-property($_top-property, $_property);
 
       @if meta.type-of(_first($_value)) == map {
-        // prettier-ignore
         #{$_property}: mid-rhythm(_first($_value), $font-map, _rest($_value) ...);
       } @else {
         #{$_property}: top-rhythm($font-map, $_value...);
@@ -150,7 +188,6 @@ $global-rhythm-size: 8px !default;
       $_bottom-property: _validate-property($_bottom-property, $_property);
 
       @if meta.type-of(_first($_value)) == map {
-        // prettier-ignore
         #{$_property}: mid-rhythm($font-map, _first($_value), _rest($_value) ...);
       } @else {
         #{$_property}: bottom-rhythm($font-map, $_value...);
