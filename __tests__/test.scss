@@ -25,6 +25,14 @@ $font-map-5: (
 );
 
 @include test-module("Test helper functions:") {
+  @include test("_first") {
+    @include assert-equal(_first((1, 2, 3)), 1);
+  }
+
+  @include test("_rest") {
+    @include assert-equal(_rest((1, 2, 3)), (2 3));
+  }
+
   @include test("_calc-baseline-from-bottom") {
     @include assert-equal(_calc-baseline-from-bottom($font-map-1), 11px);
   }
@@ -36,6 +44,13 @@ $font-map-5: (
   @include test("_calc-baseline-offset") {
     @include assert-equal(_calc-baseline-offset($font-map-1), 3px);
     @include assert-equal(_calc-baseline-offset($font-map-2), 6px);
+  }
+}
+
+@include test-module("Test validation functions:") {
+  @include test("_validate-property") {
+    @include assert-equal(_validate-property(null, margin-top), margin-top);
+    @include assert-equal(_validate-property(margin-top, margin-top), margin-top);
   }
 }
 

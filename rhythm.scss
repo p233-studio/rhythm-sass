@@ -1,6 +1,7 @@
 @use "sass:map";
 @use "sass:math";
-@use "sass:string";
+@use "sass:meta";
+@use "sass:list";
 
 // Global variables
 // ----------------
@@ -9,6 +10,24 @@ $global-rhythm-size: 8px !default;
 
 // Helper functions
 // ----------------
+@function _first($list) {
+  @return list.nth($list, 1);
+}
+
+@function _rest($list) {
+  $_result: ();
+
+  @if list.length($list) < 2 {
+    @return ();
+  }
+
+  @for $i from 2 through list.length($list) {
+    $_result: list.append($_result, list.nth($list, $i));
+  }
+
+  @return $_result;
+}
+
 @function _calc-baseline-from-bottom($font-map) {
   $_font-size: map.get($font-map, font-size);
   $_line-height: map.get($font-map, line-height);
@@ -38,6 +57,14 @@ $global-rhythm-size: 8px !default;
     @return $rhythm + $offset;
   } @else {
     @return calc(#{$rhythm} - #{$offset});
+  }
+}
+
+@function _validate-property($property-placeholder, $property) {
+  @if not $property-placeholder or $property-placeholder == $property {
+    @return $property;
+  } @else {
+    @error "Can not calculate rhythms for both #{$property-placeholder} and #{$property} at the same time.";
   }
 }
 
@@ -93,4 +120,43 @@ $global-rhythm-size: 8px !default;
   $_rhythm: $_top-font-bottom-rhythm - $_bottom-font-baseline-from-top;
 
   @return _calc-offset($_rhythm, $offset);
+}
+
+// Mixins
+// ----------------
+@mixin font($font-map, $properties-map) {
+  line-height: rhythm(map.get($font-map, line-height));
+
+  @each $_property in map.keys(map.remove($font-map, line-height, baseline)) {
+    #{$_property}: map.get($font-map, $_property);
+  }
+
+  $_top-property: null;
+  $_bottom-property: null;
+
+  @each $_property in map.keys($properties-map) {
+    $_value: map.get($properties-map, $_property);
+
+    @if $_property == margin-top or $_property == padding-top {
+      $_top-property: _validate-property($_top-property, $_property);
+
+      @if meta.type-of(_first($_value)) == map {
+        // prettier-ignore
+        #{$_property}: mid-rhythm(_first($_value), $font-map, _rest($_value) ...);
+      } @else {
+        #{$_property}: top-rhythm($font-map, $_value...);
+      }
+    } @else if $_property == margin-bottom or $_property == padding-bottom {
+      $_bottom-property: _validate-property($_bottom-property, $_property);
+
+      @if meta.type-of(_first($_value)) == map {
+        // prettier-ignore
+        #{$_property}: mid-rhythm($font-map, _first($_value), _rest($_value) ...);
+      } @else {
+        #{$_property}: bottom-rhythm($font-map, $_value...);
+      }
+    } @else {
+      @error "Unsupported property #{$_property} in `$properties-map`.";
+    }
+  }
 }
