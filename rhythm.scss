@@ -163,7 +163,7 @@ $global-rhythm-size: 8px !default;
 //  Mixins  //
 // -------- //
 
-@mixin font($font-map, $properties-map) {
+@mixin font($font-map, $properties-map: ()) {
   line-height: rhythm(map.get($font-map, line-height));
 
   @each $_property in map.keys(map.remove($font-map, line-height, baseline)) {
