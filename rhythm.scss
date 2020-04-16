@@ -61,12 +61,6 @@ $global-rhythm-size: 8px !default;
   @return $_line-height - _calc-baseline-from-bottom($font-map);
 }
 
-@function _calc-baseline-offset($font-map) {
-  $_baseline-from-bottom: _calc-baseline-from-bottom($font-map);
-
-  @return $_baseline-from-bottom % $global-rhythm-size;
-}
-
 @function _calc-offset($rhythm, $offset) {
   @if $offset == 0 {
     @return $rhythm;
@@ -109,40 +103,20 @@ $global-rhythm-size: 8px !default;
 
 @function top-rhythm($font-map, $rhythm-grids, $offset: 0) {
   $_rhythm-grids: _validate-rhythm-grids($rhythm-grids);
-  $_baseline-offset: _calc-baseline-offset($font-map);
 
-  @if $_baseline-offset == 0 {
-    @return rhythm($_rhythm-grids, $offset);
-  } @else if $_rhythm-grids > 0 {
-    $_size: ($_rhythm-grids - 1) * $global-rhythm-size + $_baseline-offset;
-
-    @return _calc-offset($_size, $offset);
-  } @else if $_rhythm-grids < 0 {
-    $_size: -(math.abs($_rhythm-grids) * $global-rhythm-size - $_baseline-offset);
-
-    @return _calc-offset($_size, $offset);
-  } @else {
-    @return $offset;
-  }
+  @return _calc-offset(
+    rhythm($_rhythm-grids) - _calc-baseline-from-top($font-map),
+    $offset
+  );
 }
 
 @function bottom-rhythm($font-map, $rhythm-grids, $offset: 0) {
   $_rhythm-grids: _validate-rhythm-grids($rhythm-grids);
-  $_baseline-offset: _calc-baseline-offset($font-map);
 
-  @if $_baseline-offset == 0 {
-    @return rhythm($_rhythm-grids, $offset);
-  } @else if $_rhythm-grids > 0 {
-    $_size: $_rhythm-grids * $global-rhythm-size - $_baseline-offset;
-
-    @return _calc-offset($_size, $offset);
-  } @else if $_rhythm-grids < 0 {
-    $_size: -((math.abs($_rhythm-grids) - 1) * $global-rhythm-size + $_baseline-offset);
-
-    @return _calc-offset($_size, $offset);
-  } @else {
-    @return $offset;
-  }
+  @return _calc-offset(
+    rhythm($_rhythm-grids) - _calc-baseline-from-bottom($font-map),
+    $offset
+  );
 }
 
 @function mid-rhythm($top-font-map, $bottom-font-map, $rhythm-grids, $offset: 0) {

@@ -48,11 +48,6 @@ $font-map-5: (
   @include test("_calc-baseline-from-top") {
     @include assert-equal(_calc-baseline-from-top($font-map-1), 29px);
   }
-
-  @include test("_calc-baseline-offset") {
-    @include assert-equal(_calc-baseline-offset($font-map-1), 3px);
-    @include assert-equal(_calc-baseline-offset($font-map-2), 6px);
-  }
 }
 
 @include test-module("Test validation functions:") {
@@ -74,17 +69,11 @@ $font-map-5: (
   }
 
   @include test("top-rhythm") {
-    @include assert-equal(top-rhythm($font-map-3, 3), 21px);
-    @include assert-equal(top-rhythm($font-map-4, 3), 21px);
-    @include assert-equal(top-rhythm($font-map-4, 3, -1px), 20px);
-    @include assert-equal(top-rhythm($font-map-4, 3, 1px), 22px);
-    @include assert-equal(top-rhythm($font-map-3, -3), -19px);
-    @include assert-equal(top-rhythm($font-map-4, -3), -19px);
-    @include assert-equal(top-rhythm($font-map-4, -3, -1px), -20px);
-    @include assert-equal(top-rhythm($font-map-4, -3, 1px), -18px);
-    @include assert-equal(top-rhythm($font-map-4, 0), 0);
-    @include assert-equal(top-rhythm($font-map-4, 0, -1px), -1px);
-    @include assert-equal(top-rhythm($font-map-4, 0, 1px), 1px);
+    @include assert-equal(top-rhythm($font-map-3, 3), 5px);
+    @include assert-equal(top-rhythm($font-map-4, 3), 5px);
+    @include assert-equal(top-rhythm($font-map-4, 3, -1px), 4px);
+    @include assert-equal(top-rhythm($font-map-4, 3, 1px), 6px);
+    @include assert-equal(top-rhythm($font-map-4, 0), -19px);
   }
 
   @include test("bottom-rhythm") {
@@ -92,13 +81,7 @@ $font-map-5: (
     @include assert-equal(bottom-rhythm($font-map-4, 3), 19px);
     @include assert-equal(bottom-rhythm($font-map-4, 3, -1px), 18px);
     @include assert-equal(bottom-rhythm($font-map-4, 3, 1px), 20px);
-    @include assert-equal(bottom-rhythm($font-map-3, -3), -21px);
-    @include assert-equal(bottom-rhythm($font-map-4, -3), -21px);
-    @include assert-equal(bottom-rhythm($font-map-4, -3, -1px), -22px);
-    @include assert-equal(bottom-rhythm($font-map-4, -3, 1px), -20px);
-    @include assert-equal(bottom-rhythm($font-map-4, 0), 0);
-    @include assert-equal(bottom-rhythm($font-map-4, 0, -1px), -1px);
-    @include assert-equal(bottom-rhythm($font-map-4, 0, 1px), 1px);
+    @include assert-equal(bottom-rhythm($font-map-4, 0), -5px);
   }
 
   @include test("mid-rhythm") {
@@ -142,7 +125,7 @@ $font-map-5: (
       @include expect {
         line-height: 24px;
         font-size: 17px;
-        margin-top: 21px;
+        margin-top: 5px;
         margin-bottom: 19px;
       }
     }
