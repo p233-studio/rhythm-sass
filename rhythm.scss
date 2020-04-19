@@ -105,8 +105,10 @@ $global-rhythm-size: 8px !default;
     @return $rhythm;
   } @else if math.unit($rhythm) == math.unit($offset) {
     @return $rhythm + $offset;
+  } @else if $offset > 0 {
+    @return calc(#{$rhythm} + #{$offset});
   } @else {
-    @return calc(#{$rhythm} - #{$offset});
+    @return calc(#{$rhythm} - #{math.abs($offset)});
   }
 }
 
