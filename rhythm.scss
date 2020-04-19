@@ -18,12 +18,12 @@ $global-rhythm-size: 8px !default;
   @if meta.type-of($value) == number and math.unit($value) != "" {
     @return $value;
   } @else {
-    @error "Invalid font-size value: #{$_font-size}.";
+    @error "Invalid font-size value: #{$value}.";
   }
 }
 
 @function _validate-rhythm-grids($value) {
-  @if _is-integer($value) {
+  @if _is-unitless-integer($value) {
     @return $value;
   } @else {
     @error "Invalid $rhythm-grids value: #{$value}. It must be unitless integer.";
@@ -31,10 +31,10 @@ $global-rhythm-size: 8px !default;
 }
 
 @function _validate-line-height($value) {
-  @if _is-integer($value) {
+  @if _is-unitless-integer($value) {
     @return $value;
   } @else {
-    @error "Invalid line-height value: #{$_line-height}. The line-height map key represents the numbers of rhythm grids, it must be unitless integer.";
+    @error "Invalid line-height value: #{$value}. The line-height map key represents the numbers of rhythm grids, it must be unitless integer.";
   }
 }
 
@@ -42,21 +42,25 @@ $global-rhythm-size: 8px !default;
   @if meta.type-of($value) == number and $value > 0 and $value < 1 {
     @return $value;
   } @else {
-    @error "Invalid $global-baseline value: #{$global-baseline}. It must be decimal number between 0 and 1.";
+    @error "Invalid baseline ratio: #{$value}. It must be decimal number between 0 and 1.";
   }
 }
 
-@function _validate-property($property-placeholder, $property) {
-  @if $property-placeholder == null or $property-placeholder == $property {
+@function _validate-property($used-property, $property) {
+  @if $used-property == null or $used-property == $property {
     @return $property;
   } @else {
-    @error "Can not calculate rhythms for both #{$property-placeholder} and #{$property} at the same time.";
+    @error "Can not calculate rhythms for both #{$used-property} and #{$property} at the same time.";
   }
 }
 
 // ------------------ //
 //  Helper Functions  //
 // ------------------ //
+
+@function _is-unitless-integer($value) {
+  @return meta.type-of($value) == number and math.is-unitless($value) and $value % 1 == 0;
+}
 
 @function _first($list) {
   @return list.nth($list, 1);
@@ -65,26 +69,20 @@ $global-rhythm-size: 8px !default;
 @function _rest($list) {
   $_result: ();
 
-  @if list.length($list) < 2 {
-    @return ();
-  }
-
-  @for $i from 2 through list.length($list) {
-    $_result: list.append($_result, list.nth($list, $i));
+  @if list.length($list) >= 2 {
+    @for $i from 2 through list.length($list) {
+      $_result: list.append($_result, list.nth($list, $i));
+    }
   }
 
   @return $_result;
-}
-
-@function _is-integer($value) {
-  @return meta.type-of($value) == number and math.is-unitless($value) and $value % 1 == 0;
 }
 
 @function _calc-baseline-from-bottom($font-map) {
   $_font-size: _validate-font-size(map.get($font-map, font-size));
   $_line-height: _validate-line-height(map.get($font-map, line-height));
   $_baseline: _validate-baseline(map.get($font-map, baseline) or $global-baseline);
-  $_half-space: ($_line-height * $global-rhythm-size - $_font-size) / 2;
+  $_half-space: ($global-rhythm-size * $_line-height - $_font-size) / 2;
   $_baseline-height: $_font-size * $_baseline;
 
   @return math.round($_half-space + $_baseline-height);
@@ -94,21 +92,21 @@ $global-rhythm-size: 8px !default;
   $_font-size: _validate-font-size(map.get($font-map, font-size));
   $_line-height: _validate-line-height(map.get($font-map, line-height));
   $_baseline: _validate-baseline(map.get($font-map, baseline) or $global-baseline);
-  $_half-space: ($_line-height * $global-rhythm-size - $_font-size) / 2;
+  $_half-space: ($global-rhythm-size * $_line-height - $_font-size) / 2;
   $_baseline-height: $_font-size * (1 - $_baseline);
 
   @return math.round($_half-space + $_baseline-height);
 }
 
-@function _calc-offset($rhythm, $offset) {
+@function _calc-height($height, $offset) {
   @if $offset == 0 {
-    @return $rhythm;
-  } @else if math.unit($rhythm) == math.unit($offset) {
-    @return $rhythm + $offset;
+    @return $height;
+  } @else if math.unit($height) == math.unit($offset) {
+    @return $height + $offset;
   } @else if $offset > 0 {
-    @return calc(#{$rhythm} + #{$offset});
+    @return calc(#{$height} + #{$offset});
   } @else {
-    @return calc(#{$rhythm} - #{math.abs($offset)});
+    @return calc(#{$height} - #{math.abs($offset)});
   }
 }
 
@@ -117,32 +115,28 @@ $global-rhythm-size: 8px !default;
 // ----------- //
 
 @function rhythm($rhythm-grids, $offset: 0) {
-  $_rhythm-grids: _validate-rhythm-grids($rhythm-grids);
+  $_grids: _validate-rhythm-grids($rhythm-grids);
 
-  @return _calc-offset($_rhythm-grids * $global-rhythm-size, $offset);
+  @return _calc-height($global-rhythm-size * $_grids, $offset);
 }
 
 @function top-rhythm($font-map, $rhythm-grids, $offset: 0) {
-  $_rhythm-grids: _validate-rhythm-grids($rhythm-grids);
+  $_grids: _validate-rhythm-grids($rhythm-grids);
 
-  @return _calc-offset(rhythm($_rhythm-grids) - _calc-baseline-from-top($font-map), $offset);
+  @return _calc-height($global-rhythm-size * $_grids - _calc-baseline-from-top($font-map), $offset);
 }
 
 @function bottom-rhythm($font-map, $rhythm-grids, $offset: 0) {
-  $_rhythm-grids: _validate-rhythm-grids($rhythm-grids);
+  $_grids: _validate-rhythm-grids($rhythm-grids);
 
-  @return _calc-offset(rhythm($_rhythm-grids) - _calc-baseline-from-bottom($font-map), $offset);
+  @return _calc-height($global-rhythm-size * $_grids - _calc-baseline-from-bottom($font-map), $offset);
 }
 
 @function mid-rhythm($top-font-map, $bottom-font-map, $rhythm-grids, $offset: 0) {
-  $_rhythm-grids: _validate-rhythm-grids($rhythm-grids);
+  $_grids: _validate-rhythm-grids($rhythm-grids);
 
-  @if $_rhythm-grids >= 1 {
-    $_top-font-bottom-rhythm: bottom-rhythm($top-font-map, $_rhythm-grids);
-    $_bottom-font-baseline-from-top: _calc-baseline-from-top($bottom-font-map);
-    $_size: $_top-font-bottom-rhythm - $_bottom-font-baseline-from-top;
-
-    @return _calc-offset($_size, $offset);
+  @if $_grids >= 1 {
+    @return _calc-height(bottom-rhythm($top-font-map, $_grids) - _calc-baseline-from-top($bottom-font-map), $offset);
   } @else {
     @error "Invalid $rhythm-grids value: #{$rhythm-grids}. The $rhythm-grids between two elements must larger or equal to 1.";
   }
@@ -153,20 +147,22 @@ $global-rhythm-size: 8px !default;
 // -------- //
 
 @mixin font($font-map, $properties-map: ()) {
-  line-height: rhythm(_validate-line-height(map.get($font-map, line-height)));
+  $_grids: _validate-line-height(map.get($font-map, line-height));
+
+  line-height: $global-rhythm-size * $_grids;
 
   @each $_property in map.keys(map.remove($font-map, line-height, baseline)) {
     #{$_property}: map.get($font-map, $_property);
   }
 
-  $_top-property: null;
-  $_bottom-property: null;
+  $_used-top-property: null;
+  $_used-bottom-property: null;
 
   @each $_property in map.keys($properties-map) {
     $_value: map.get($properties-map, $_property);
 
     @if $_property == margin-top or $_property == padding-top {
-      $_top-property: _validate-property($_top-property, $_property);
+      $_used-top-property: _validate-property($_used-top-property, $_property);
 
       @if meta.type-of(_first($_value)) == map {
         #{$_property}: mid-rhythm(_first($_value), $font-map, _rest($_value) ...);
@@ -174,7 +170,7 @@ $global-rhythm-size: 8px !default;
         #{$_property}: top-rhythm($font-map, $_value...);
       }
     } @else if $_property == margin-bottom or $_property == padding-bottom {
-      $_bottom-property: _validate-property($_bottom-property, $_property);
+      $_used-bottom-property: _validate-property($_used-bottom-property, $_property);
 
       @if meta.type-of(_first($_value)) == map {
         #{$_property}: mid-rhythm($font-map, _first($_value), _rest($_value) ...);

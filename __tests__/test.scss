@@ -48,20 +48,24 @@ $font-map-5: (
 }
 
 @include test-module("Test helper functions:") {
+  @include test("_is-unitless-integer") {
+    @include assert-equal(_is-unitless-integer(0), true);
+    @include assert-equal(_is-unitless-integer(10), true);
+    @include assert-equal(_is-unitless-integer(-10), true);
+    @include assert-equal(_is-unitless-integer(10px), false);
+    @include assert-equal(_is-unitless-integer("10px"), false);
+  }
+
   @include test("_first") {
     @include assert-equal(_first((1, 2, 3)), 1);
+    @include assert-equal(_first([1]), 1);
+    @include assert-equal(_first(1), 1);
   }
 
   @include test("_rest") {
     @include assert-equal(_rest((1, 2, 3)), (2 3));
-  }
-
-  @include test("_is-integer") {
-    @include assert-equal(_is-integer(0), true);
-    @include assert-equal(_is-integer(10), true);
-    @include assert-equal(_is-integer(-10), true);
-    @include assert-equal(_is-integer(10px), false);
-    @include assert-equal(_is-integer("10px"), false);
+    @include assert-equal(_rest([1]), ());
+    @include assert-equal(_rest(()), ());
   }
 
   @include test("_calc-baseline-from-bottom") {
@@ -72,12 +76,12 @@ $font-map-5: (
     @include assert-equal(_calc-baseline-from-top($font-map-1), 29px);
   }
 
-  @include test("_calc-offset") {
-    @include assert-equal(_calc-offset(20px, 0), 20px);
-    @include assert-equal(_calc-offset(20px, 1px), 21px);
-    @include assert-equal(_calc-offset(20px, -1px), 19px);
-    @include assert-equal(_calc-offset(2rem, 1px), calc(2rem + 1px));
-    @include assert-equal(_calc-offset(2rem, -1px), calc(2rem - 1px));
+  @include test("_calc-height") {
+    @include assert-equal(_calc-height(20px, 0), 20px);
+    @include assert-equal(_calc-height(20px, 1px), 21px);
+    @include assert-equal(_calc-height(20px, -1px), 19px);
+    @include assert-equal(_calc-height(2rem, 1px), calc(2rem + 1px));
+    @include assert-equal(_calc-height(2rem, -1px), calc(2rem - 1px));
   }
 }
 
