@@ -15,10 +15,14 @@ $global-rhythm-size: 8px !default;
 // ---------------------- //
 
 @function _validate-font-size($value) {
-  @if meta.type-of($value) == number and math.unit($value) != "" {
+  @if meta.type-of($value) == number and math.unit($value) == math.unit($global-rhythm-size) {
     @return $value;
-  } @else {
+  } @else if $value == null {
+    @error "The font-size value is not provided.";
+  } @else if meta.type-of($value) != number {
     @error "Invalid font-size value: #{$value}.";
+  } @else {
+    @error "Invalid font-size value: #{$value}. font-size should use the same unit as rhythm size.";
   }
 }
 
@@ -26,15 +30,17 @@ $global-rhythm-size: 8px !default;
   @if _is-unitless-integer($value) {
     @return $value;
   } @else {
-    @error "Invalid $rhythm-grids value: #{$value}. It must be unitless integer.";
+    @error "Invalid $rhythm-grids value: #{$value}. It must be unitless positive integer.";
   }
 }
 
 @function _validate-line-height($value) {
   @if _is-unitless-integer($value) {
     @return $value;
+  } @else if $value == null {
+    @error "The line-height value is not provided.";
   } @else {
-    @error "Invalid line-height value: #{$value}. The line-height map key represents the numbers of rhythm grids, it must be unitless integer.";
+    @error "Invalid line-height value: #{$value}. The line-height map key represents the numbers of rhythm grids, it must be unitless positive integer.";
   }
 }
 
@@ -59,7 +65,7 @@ $global-rhythm-size: 8px !default;
 // ------------------ //
 
 @function _is-unitless-integer($value) {
-  @return meta.type-of($value) == number and math.is-unitless($value) and $value % 1 == 0;
+  @return meta.type-of($value) == number and math.is-unitless($value) and $value > 0 and $value % 1 == 0;
 }
 
 @function _first($list) {
@@ -135,11 +141,7 @@ $global-rhythm-size: 8px !default;
 @function mid-rhythm($top-font-map, $bottom-font-map, $rhythm-grids, $offset: 0) {
   $_grids: _validate-rhythm-grids($rhythm-grids);
 
-  @if $_grids >= 1 {
-    @return _calc-height(bottom-rhythm($top-font-map, $_grids) - _calc-baseline-from-top($bottom-font-map), $offset);
-  } @else {
-    @error "Invalid $rhythm-grids value: #{$rhythm-grids}. The $rhythm-grids between two elements must larger or equal to 1.";
-  }
+  @return _calc-height(bottom-rhythm($top-font-map, $_grids) - _calc-baseline-from-top($bottom-font-map), $offset);
 }
 
 // -------- //
@@ -147,11 +149,13 @@ $global-rhythm-size: 8px !default;
 // -------- //
 
 @mixin font($font-map, $properties-map: ()) {
+  $_font-size: _validate-font-size(map.get($font-map, font-size));
   $_grids: _validate-line-height(map.get($font-map, line-height));
 
+  font-size: $_font-size;
   line-height: $global-rhythm-size * $_grids;
 
-  @each $_property in map.keys(map.remove($font-map, line-height, baseline)) {
+  @each $_property in map.keys(map.remove($font-map, font-size, line-height, baseline)) {
     #{$_property}: map.get($font-map, $_property);
   }
 
