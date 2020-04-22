@@ -9,20 +9,19 @@
 
 $global-baseline: 0 !default;
 $global-rhythm-size: 8px !default;
+$global-rem-size: 16px !default;
 
 // ---------------------- //
 //  Validation Functions  //
 // ---------------------- //
 
 @function _validate-font-size($value) {
-  @if meta.type-of($value) == number and math.unit($value) == math.unit($global-rhythm-size) {
+  @if meta.type-of($value) == number {
     @return $value;
   } @else if $value == null {
     @error "The font-size value is not provided.";
-  } @else if meta.type-of($value) != number {
-    @error "Invalid font-size value: #{$value}.";
   } @else {
-    @error "Invalid font-size value: #{$value}. font-size should use the same unit as rhythm size.";
+    @error "Invalid font-size value: #{$value}.";
   }
 }
 
@@ -68,6 +67,18 @@ $global-rhythm-size: 8px !default;
   @return meta.type-of($value) == number and math.is-unitless($value) and $value > 0 and $value % 1 == 0;
 }
 
+@function _convert-unit($value) {
+  @if math.unit($value) == math.unit($global-rhythm-size) {
+    @return $value;
+  } @else if math.unit($value) == rem and math.unit($global-rhythm-size) == px {
+    @return $value / 1rem * $global-rem-size;
+  } @else if math.unit($value) == px and math.unit($global-rhythm-size) == rem {
+    @return $value / $global-rem-size * 1rem;
+  } @else {
+    @error "Can not calculate font-size and line-height with different units.";
+  }
+}
+
 @function _first($list) {
   @return list.nth($list, 1);
 }
@@ -86,6 +97,7 @@ $global-rhythm-size: 8px !default;
 
 @function _calc-baseline-from-bottom($font-map) {
   $_font-size: _validate-font-size(map.get($font-map, font-size));
+  $_font-size: _convert-unit($_font-size);
   $_line-height: _validate-line-height(map.get($font-map, line-height));
   $_baseline: _validate-baseline(map.get($font-map, baseline) or $global-baseline);
   $_half-space: ($global-rhythm-size * $_line-height - $_font-size) / 2;
@@ -96,6 +108,7 @@ $global-rhythm-size: 8px !default;
 
 @function _calc-baseline-from-top($font-map) {
   $_font-size: _validate-font-size(map.get($font-map, font-size));
+  $_font-size: _convert-unit($_font-size);
   $_line-height: _validate-line-height(map.get($font-map, line-height));
   $_baseline: _validate-baseline(map.get($font-map, baseline) or $global-baseline);
   $_half-space: ($global-rhythm-size * $_line-height - $_font-size) / 2;

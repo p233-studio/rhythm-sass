@@ -10,6 +10,10 @@ $font-map-2: (
   font-size: 16px,
   line-height: 3
 );
+$font-map-2-1: (
+  font-size: 1rem,
+  line-height: 3
+);
 $font-map-3: (
   font-size: 17px,
   line-height: 3,
@@ -56,6 +60,17 @@ $font-map-5: (
     @include assert-equal(_is-unitless-integer("10px"), false);
   }
 
+  @include test("_convert-unit") {
+    @include assert-equal(_convert-unit(10px), 10px);
+    @include assert-equal(_convert-unit(1rem), 16px);
+
+    $global-rhythm-size: 0.5rem !global;
+
+    @include assert-equal(_convert-unit(16px), 1rem);
+
+    $global-rhythm-size: 8px !global;
+  }
+
   @include test("_first") {
     @include assert-equal(_first((1, 2, 3)), 1);
     @include assert-equal(_first([1]), 1);
@@ -97,6 +112,7 @@ $font-map-5: (
     @include assert-equal(top-rhythm($font-map-4, 3), 5px);
     @include assert-equal(top-rhythm($font-map-4, 3, -1px), 4px);
     @include assert-equal(top-rhythm($font-map-4, 3, 1px), 6px);
+    @include assert-equal(top-rhythm($font-map-2, 3, 1px), top-rhythm($font-map-2-1, 3, 1px));
   }
 
   @include test("bottom-rhythm") {
@@ -104,6 +120,7 @@ $font-map-5: (
     @include assert-equal(bottom-rhythm($font-map-4, 3), 19px);
     @include assert-equal(bottom-rhythm($font-map-4, 3, -1px), 18px);
     @include assert-equal(bottom-rhythm($font-map-4, 3, 1px), 20px);
+    @include assert-equal(bottom-rhythm($font-map-2, 3, 1px), bottom-rhythm($font-map-2-1, 3, 1px));
   }
 
   @include test("mid-rhythm") {
