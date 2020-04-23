@@ -4,7 +4,8 @@
   "description": "",
   "main": "rhythm.scss",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build-example": "./node_modules/.bin/sass ./example/styles.scss:./example/styles.css --no-source-map"
   },
   "repository": {
     "type": "git",
