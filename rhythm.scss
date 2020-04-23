@@ -29,7 +29,7 @@ $global-rem-size: 16px !default;
   @if _is-unitless-integer($value) {
     @return $value;
   } @else {
-    @error "Invalid $rhythm-grids value: #{$value}. It must be unitless positive integer.";
+    @error "Invalid $rhythm-grids value: #{$value}. It must be unitless integer.";
   }
 }
 
@@ -39,7 +39,7 @@ $global-rem-size: 16px !default;
   } @else if $value == null {
     @error "The line-height value is not provided.";
   } @else {
-    @error "Invalid line-height value: #{$value}. The line-height map key represents the numbers of rhythm grids, it must be unitless positive integer.";
+    @error "Invalid line-height value: #{$value}. The line-height map key represents the numbers of rhythm grids, it must be unitless integer.";
   }
 }
 
@@ -64,7 +64,7 @@ $global-rem-size: 16px !default;
 // ------------------ //
 
 @function _is-unitless-integer($value) {
-  @return meta.type-of($value) == number and math.is-unitless($value) and $value > 0 and $value % 1 == 0;
+  @return meta.type-of($value) == number and math.is-unitless($value) and $value % 1 == 0;
 }
 
 @function _convert-unit($value) {
