@@ -83,12 +83,12 @@ $font-map-5: (
     @include assert-equal(_rest(()), ());
   }
 
-  @include test("_calc-baseline-from-bottom") {
-    @include assert-equal(_calc-baseline-from-bottom($font-map-1), 11px);
+  @include test("_calc-bottom-font-height") {
+    @include assert-equal(_calc-bottom-font-height($font-map-1), 11px);
   }
 
-  @include test("_calc-baseline-from-top") {
-    @include assert-equal(_calc-baseline-from-top($font-map-1), 29px);
+  @include test("_calc-top-font-height") {
+    @include assert-equal(_calc-top-font-height($font-map-1), 29px);
   }
 
   @include test("_calc-height") {
@@ -107,26 +107,26 @@ $font-map-5: (
     @include assert-equal(rhythm(5, 1px), 41px);
   }
 
-  @include test("top-rhythm") {
-    @include assert-equal(top-rhythm($font-map-3, 3), 5px);
-    @include assert-equal(top-rhythm($font-map-4, 3), 5px);
-    @include assert-equal(top-rhythm($font-map-4, 3, -1px), 4px);
-    @include assert-equal(top-rhythm($font-map-4, 3, 1px), 6px);
-    @include assert-equal(top-rhythm($font-map-2, 3, 1px), top-rhythm($font-map-2-1, 3, 1px));
+  @include test("baseline-top") {
+    @include assert-equal(baseline-top($font-map-3, 3), 5px);
+    @include assert-equal(baseline-top($font-map-4, 3), 5px);
+    @include assert-equal(baseline-top($font-map-4, 3, -1px), 4px);
+    @include assert-equal(baseline-top($font-map-4, 3, 1px), 6px);
+    @include assert-equal(baseline-top($font-map-2, 3, 1px), baseline-top($font-map-2-1, 3, 1px));
   }
 
-  @include test("bottom-rhythm") {
-    @include assert-equal(bottom-rhythm($font-map-3, 3), 19px);
-    @include assert-equal(bottom-rhythm($font-map-4, 3), 19px);
-    @include assert-equal(bottom-rhythm($font-map-4, 3, -1px), 18px);
-    @include assert-equal(bottom-rhythm($font-map-4, 3, 1px), 20px);
-    @include assert-equal(bottom-rhythm($font-map-2, 3, 1px), bottom-rhythm($font-map-2-1, 3, 1px));
+  @include test("baseline-bottom") {
+    @include assert-equal(baseline-bottom($font-map-3, 3), 19px);
+    @include assert-equal(baseline-bottom($font-map-4, 3), 19px);
+    @include assert-equal(baseline-bottom($font-map-4, 3, -1px), 18px);
+    @include assert-equal(baseline-bottom($font-map-4, 3, 1px), 20px);
+    @include assert-equal(baseline-bottom($font-map-2, 3, 1px), baseline-bottom($font-map-2-1, 3, 1px));
   }
 
-  @include test("mid-rhythm") {
-    @include assert-equal(mid-rhythm($font-map-3, $font-map-5, 3), 6px);
-    @include assert-equal(mid-rhythm($font-map-3, $font-map-5, 3, -1px), 5px);
-    @include assert-equal(mid-rhythm($font-map-3, $font-map-5, 3, 1px), 7px);
+  @include test("baseline-between") {
+    @include assert-equal(baseline-between($font-map-3, $font-map-5, 3), 6px);
+    @include assert-equal(baseline-between($font-map-3, $font-map-5, 3, -1px), 5px);
+    @include assert-equal(baseline-between($font-map-3, $font-map-5, 3, 1px), 7px);
   }
 }
 

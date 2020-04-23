@@ -95,7 +95,7 @@ $global-rem-size: 16px !default;
   @return $_result;
 }
 
-@function _calc-baseline-from-bottom($font-map) {
+@function _calc-bottom-font-height($font-map) {
   $_font-size: _validate-font-size(map.get($font-map, font-size));
   $_font-size: _convert-unit($_font-size);
   $_line-height: _validate-line-height(map.get($font-map, line-height));
@@ -106,7 +106,7 @@ $global-rem-size: 16px !default;
   @return math.round($_half-space + $_baseline-height);
 }
 
-@function _calc-baseline-from-top($font-map) {
+@function _calc-top-font-height($font-map) {
   $_font-size: _validate-font-size(map.get($font-map, font-size));
   $_font-size: _convert-unit($_font-size);
   $_line-height: _validate-line-height(map.get($font-map, line-height));
@@ -139,22 +139,22 @@ $global-rem-size: 16px !default;
   @return _calc-height($global-rhythm-size * $_grids, $offset);
 }
 
-@function top-rhythm($font-map, $rhythm-grids, $offset: 0) {
+@function baseline-top($font-map, $rhythm-grids, $offset: 0) {
   $_grids: _validate-rhythm-grids($rhythm-grids);
 
-  @return _calc-height($global-rhythm-size * $_grids - _calc-baseline-from-top($font-map), $offset);
+  @return _calc-height($global-rhythm-size * $_grids - _calc-top-font-height($font-map), $offset);
 }
 
-@function bottom-rhythm($font-map, $rhythm-grids, $offset: 0) {
+@function baseline-bottom($font-map, $rhythm-grids, $offset: 0) {
   $_grids: _validate-rhythm-grids($rhythm-grids);
 
-  @return _calc-height($global-rhythm-size * $_grids - _calc-baseline-from-bottom($font-map), $offset);
+  @return _calc-height($global-rhythm-size * $_grids - _calc-bottom-font-height($font-map), $offset);
 }
 
-@function mid-rhythm($top-font-map, $bottom-font-map, $rhythm-grids, $offset: 0) {
+@function baseline-between($above-font-map, $below-font-map, $rhythm-grids, $offset: 0) {
   $_grids: _validate-rhythm-grids($rhythm-grids);
 
-  @return _calc-height(bottom-rhythm($top-font-map, $_grids) - _calc-baseline-from-top($bottom-font-map), $offset);
+  @return _calc-height(baseline-bottom($above-font-map, $_grids) - _calc-top-font-height($below-font-map), $offset);
 }
 
 // -------- //
@@ -182,17 +182,17 @@ $global-rem-size: 16px !default;
       $_used-top-property: _validate-property($_used-top-property, $_property);
 
       @if meta.type-of(_first($_value)) == map {
-        #{$_property}: mid-rhythm(_first($_value), $font-map, _rest($_value) ...);
+        #{$_property}: baseline-between(_first($_value), $font-map, _rest($_value) ...);
       } @else {
-        #{$_property}: top-rhythm($font-map, $_value...);
+        #{$_property}: baseline-top($font-map, $_value...);
       }
     } @else if $_property == margin-bottom or $_property == padding-bottom {
       $_used-bottom-property: _validate-property($_used-bottom-property, $_property);
 
       @if meta.type-of(_first($_value)) == map {
-        #{$_property}: mid-rhythm($font-map, _first($_value), _rest($_value) ...);
+        #{$_property}: baseline-between($font-map, _first($_value), _rest($_value) ...);
       } @else {
-        #{$_property}: bottom-rhythm($font-map, $_value...);
+        #{$_property}: baseline-bottom($font-map, $_value...);
       }
     } @else {
       @error "Unsupported property #{$_property} in $properties-map.";
