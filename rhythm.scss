@@ -139,16 +139,28 @@ $global-rem-size: 16px !default;
   @return _calc-height($global-rhythm-size * $_grids, $offset);
 }
 
-@function baseline-top($font-map, $rhythm-grids, $offset: 0) {
+@function rhythm-top($font-map, $rhythm-grids, $offset: 0) {
+  $_grids: _validate-rhythm-grids($rhythm-grids);
+
+  @return _calc-height($global-rhythm-size * $_grids - _calc-bottom-font-height($font-map), $offset);
+}
+
+@function rhythm-bottom($font-map, $rhythm-grids, $offset: 0) {
   $_grids: _validate-rhythm-grids($rhythm-grids);
 
   @return _calc-height($global-rhythm-size * $_grids - _calc-top-font-height($font-map), $offset);
 }
 
+@function baseline-top($font-map, $rhythm-grids, $offset: 0) {
+  $_grids: _validate-rhythm-grids($rhythm-grids);
+
+  @return rhythm-bottom($font-map, $rhythm-grids, $offset);
+}
+
 @function baseline-bottom($font-map, $rhythm-grids, $offset: 0) {
   $_grids: _validate-rhythm-grids($rhythm-grids);
 
-  @return _calc-height($global-rhythm-size * $_grids - _calc-bottom-font-height($font-map), $offset);
+  @return rhythm-top($font-map, $rhythm-grids, $offset);
 }
 
 @function baseline-between($above-font-map, $below-font-map, $rhythm-grids, $offset: 0) {
