@@ -25,13 +25,13 @@
   "homepage": "https://github.com/P233/rhythm#readme",
   "devDependencies": {
     "@p233/stylelint-config-scss": "^2.0.1",
-    "husky": "^4.2.3",
-    "jest": "^25.2.7",
-    "lint-staged": "^10.1.1",
-    "prettier": "^2.0.2",
-    "sass": "^1.26.3",
+    "husky": "^4.2.5",
+    "jest": "^26.1.0",
+    "lint-staged": "^10.2.11",
+    "prettier": "^2.0.5",
+    "sass": "^1.26.9",
     "sass-true": "^5.0.0",
-    "stylelint": "^13.3.0"
+    "stylelint": "^13.6.1"
   },
   "jest": {
     "testEnvironment": "node"
