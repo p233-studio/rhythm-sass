@@ -1,5 +1,5 @@
 @use "../rhythm" as * with (
-  $global-baseline: 0.112061 // for Noto serif font family
+  $default-baseline: 0.112061 // for Noto serif font family
 );
 
 $gutter-width: 16px;

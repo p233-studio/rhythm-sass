@@ -7,7 +7,7 @@
 //  Global Variables  //
 // ------------------ //
 
-$global-baseline: 0 !default;
+$default-baseline: 0 !default;
 $global-rhythm-size: 8px !default;
 $global-rem-size: 16px !default;
 
@@ -99,7 +99,7 @@ $global-rem-size: 16px !default;
   $_font-size: _validate-font-size(map.get($font-map, font-size));
   $_font-size: _convert-unit($_font-size);
   $_line-height: _validate-line-height(map.get($font-map, line-height));
-  $_baseline: _validate-baseline(map.get($font-map, baseline) or $global-baseline);
+  $_baseline: _validate-baseline(map.get($font-map, baseline) or $default-baseline);
   $_half-space: ($global-rhythm-size * $_line-height - $_font-size) / 2;
   $_baseline-height: $_font-size * $_baseline;
 
@@ -110,7 +110,7 @@ $global-rem-size: 16px !default;
   $_font-size: _validate-font-size(map.get($font-map, font-size));
   $_font-size: _convert-unit($_font-size);
   $_line-height: _validate-line-height(map.get($font-map, line-height));
-  $_baseline: _validate-baseline(map.get($font-map, baseline) or $global-baseline);
+  $_baseline: _validate-baseline(map.get($font-map, baseline) or $default-baseline);
   $_half-space: ($global-rhythm-size * $_line-height - $_font-size) / 2;
   $_baseline-height: $_font-size * (1 - $_baseline);
 
@@ -194,7 +194,7 @@ $global-rem-size: 16px !default;
       $_used-top-property: _validate-property($_used-top-property, $_property);
 
       @if meta.type-of(_first($_value)) == map {
-        #{$_property}: baseline-between(_first($_value), $font-map, _rest($_value) ...);
+        #{$_property}: baseline-between(_first($_value), $font-map, _rest($_value)...);
       } @else {
         #{$_property}: baseline-top($font-map, $_value...);
       }
@@ -202,7 +202,7 @@ $global-rem-size: 16px !default;
       $_used-bottom-property: _validate-property($_used-bottom-property, $_property);
 
       @if meta.type-of(_first($_value)) == map {
-        #{$_property}: baseline-between($font-map, _first($_value), _rest($_value) ...);
+        #{$_property}: baseline-between($font-map, _first($_value), _rest($_value)...);
       } @else {
         #{$_property}: baseline-bottom($font-map, $_value...);
       }
