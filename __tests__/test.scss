@@ -45,9 +45,9 @@ $font-map-5: (
     @include assert-equal(_validate-baseline(0.112061), 0.112061);
   }
 
-  @include test("_validate-property") {
-    @include assert-equal(_validate-property(null, margin-top), margin-top);
-    @include assert-equal(_validate-property(margin-top, margin-top), margin-top);
+  @include test("_validate-unused-property") {
+    @include assert-equal(_validate-unused-property(null, margin-top), margin-top);
+    @include assert-equal(_validate-unused-property(margin-top, margin-top), margin-top);
   }
 }
 

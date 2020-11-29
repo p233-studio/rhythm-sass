@@ -51,7 +51,7 @@ $global-rem-size: 16px !default;
   }
 }
 
-@function _validate-property($used-property, $property) {
+@function _validate-unused-property($used-property, $property) {
   @if $used-property == null or $used-property == $property {
     @return $property;
   } @else {
@@ -191,7 +191,7 @@ $global-rem-size: 16px !default;
     $_value: map.get($properties-map, $_property);
 
     @if $_property == margin-top or $_property == padding-top {
-      $_used-top-property: _validate-property($_used-top-property, $_property);
+      $_used-top-property: _validate-unused-property($_used-top-property, $_property);
 
       @if meta.type-of(_first($_value)) == map {
         #{$_property}: baseline-between(_first($_value), $font-map, _rest($_value)...);
@@ -199,7 +199,7 @@ $global-rem-size: 16px !default;
         #{$_property}: baseline-top($font-map, $_value...);
       }
     } @else if $_property == margin-bottom or $_property == padding-bottom {
-      $_used-bottom-property: _validate-property($_used-bottom-property, $_property);
+      $_used-bottom-property: _validate-unused-property($_used-bottom-property, $_property);
 
       @if meta.type-of(_first($_value)) == map {
         #{$_property}: baseline-between($font-map, _first($_value), _rest($_value)...);
