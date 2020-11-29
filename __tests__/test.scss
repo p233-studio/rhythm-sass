@@ -60,13 +60,13 @@ $font-map-5: (
     @include assert-equal(_is-unitless-integer("10px"), false);
   }
 
-  @include test("_convert-unit") {
-    @include assert-equal(_convert-unit(10px), 10px);
-    @include assert-equal(_convert-unit(1rem), 16px);
+  @include test("_convert-font-size-unit") {
+    @include assert-equal(_convert-font-size-unit(10px), 10px);
+    @include assert-equal(_convert-font-size-unit(1rem), 16px);
 
     $global-rhythm-size: 0.5rem !global;
 
-    @include assert-equal(_convert-unit(16px), 1rem);
+    @include assert-equal(_convert-font-size-unit(16px), 1rem);
 
     $global-rhythm-size: 8px !global;
   }

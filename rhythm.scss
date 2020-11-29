@@ -67,15 +67,18 @@ $global-rem-size: 16px !default;
   @return meta.type-of($value) == number and math.is-unitless($value) and $value % 1 == 0;
 }
 
-@function _convert-unit($value) {
-  @if math.unit($value) == math.unit($global-rhythm-size) {
+@function _convert-font-size-unit($value) {
+  $_font-unit: math.unit($value);
+  $_rhythm-unit: math.unit($global-rhythm-size);
+
+  @if $_font-unit == $_rhythm-unit {
     @return $value;
-  } @else if math.unit($value) == rem and math.unit($global-rhythm-size) == px {
+  } @else if $_font-unit == rem and $_rhythm-unit == px {
     @return $value / 1rem * $global-rem-size;
-  } @else if math.unit($value) == px and math.unit($global-rhythm-size) == rem {
+  } @else if $_font-unit == px and $_rhythm-unit == rem {
     @return $value / $global-rem-size * 1rem;
   } @else {
-    @error "Can not calculate font-size and line-height with different units.";
+    @error "Can not convert the font-size value (#{$value}) to the same unit of $global-rhythm-size (#{$global-rhythm-size}).";
   }
 }
 
@@ -97,7 +100,7 @@ $global-rem-size: 16px !default;
 
 @function _calc-bottom-font-height($font-map) {
   $_font-size: _validate-font-size(map.get($font-map, font-size));
-  $_font-size: _convert-unit($_font-size);
+  $_font-size: _convert-font-size-unit($_font-size);
   $_line-height: _validate-line-height(map.get($font-map, line-height));
   $_baseline: _validate-baseline(map.get($font-map, baseline) or $default-baseline);
   $_half-space: ($global-rhythm-size * $_line-height - $_font-size) / 2;
@@ -108,7 +111,7 @@ $global-rem-size: 16px !default;
 
 @function _calc-top-font-height($font-map) {
   $_font-size: _validate-font-size(map.get($font-map, font-size));
-  $_font-size: _convert-unit($_font-size);
+  $_font-size: _convert-font-size-unit($_font-size);
   $_line-height: _validate-line-height(map.get($font-map, line-height));
   $_baseline: _validate-baseline(map.get($font-map, baseline) or $default-baseline);
   $_half-space: ($global-rhythm-size * $_line-height - $_font-size) / 2;
