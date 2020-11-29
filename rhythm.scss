@@ -19,9 +19,9 @@ $global-rem-size: 16px !default;
   @if meta.type-of($value) == number {
     @return $value;
   } @else if $value == null {
-    @error "The font-size value is not provided.";
+    @error "Missing font-size value.";
   } @else {
-    @error "Invalid font-size value: #{$value}.";
+    @error "Invalid font-size value: '#{$value}'. Expected number but got '#{meta.type-of($value)}'.";
   }
 }
 
@@ -29,7 +29,7 @@ $global-rem-size: 16px !default;
   @if _is-unitless-integer($value) {
     @return $value;
   } @else {
-    @error "Invalid $rhythm-grids value: #{$value}. It must be unitless integer.";
+    @error "Invalid $rhythm-grids value: '#{$value}'. It must be a unitless integer.";
   }
 }
 
@@ -37,9 +37,9 @@ $global-rem-size: 16px !default;
   @if _is-unitless-integer($value) {
     @return $value;
   } @else if $value == null {
-    @error "The line-height value is not provided.";
+    @error "Missing line-height value.";
   } @else {
-    @error "Invalid line-height value: #{$value}. The line-height map key represents the numbers of rhythm grids, it must be unitless integer.";
+    @error "Invalid line-height value: #{$value}. The line-height key represents the numbers of rhythm grids, it must be a unitless integer.";
   }
 }
 
@@ -47,7 +47,7 @@ $global-rem-size: 16px !default;
   @if meta.type-of($value) == number and $value > 0 and $value < 1 {
     @return $value;
   } @else {
-    @error "Invalid baseline ratio: #{$value}. It must be decimal number between 0 and 1.";
+    @error "Invalid baseline ratio: '#{$value}'. It must be a decimal number between 0 and 1.";
   }
 }
 
@@ -55,7 +55,7 @@ $global-rem-size: 16px !default;
   @if $used-property == null or $used-property == $property {
     @return $property;
   } @else {
-    @error "Can not calculate rhythms for both #{$used-property} and #{$property} at the same time.";
+    @error "Can not calculate rhythms for both '#{$used-property}' and '#{$property}' at the same time.";
   }
 }
 
@@ -207,7 +207,7 @@ $global-rem-size: 16px !default;
         #{$_property}: baseline-bottom($font-map, $_value...);
       }
     } @else {
-      @error "Unsupported property #{$_property} in $properties-map.";
+      @error "Unsupported property '#{$_property}' in $properties-map.";
     }
   }
 }
