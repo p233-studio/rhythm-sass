@@ -59,9 +59,9 @@ $global-rem-size: 16px !default;
   }
 }
 
-// ------------------ //
-//  Helper Functions  //
-// ------------------ //
+// ------------------- //
+//  Private Functions  //
+// ------------------- //
 
 @function _is-unitless-integer($value) {
   @return meta.type-of($value) == number and math.is-unitless($value) and $value % 1 == 0;
@@ -132,9 +132,9 @@ $global-rem-size: 16px !default;
   }
 }
 
-// ----------- //
-//  Functions  //
-// ----------- //
+// ------------------ //
+//  Public Functions  //
+// ------------------ //
 
 @function rhythm($rhythm-grids, $offset: 0) {
   $_grids: _validate-rhythm-grids($rhythm-grids);

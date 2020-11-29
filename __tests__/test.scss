@@ -51,7 +51,7 @@ $font-map-5: (
   }
 }
 
-@include test-module("Test helper functions:") {
+@include test-module("Test private functions:") {
   @include test("_is-unitless-integer") {
     @include assert-equal(_is-unitless-integer(0), true);
     @include assert-equal(_is-unitless-integer(10), true);
@@ -100,7 +100,7 @@ $font-map-5: (
   }
 }
 
-@include test-module("Test functions:") {
+@include test-module("Test public functions:") {
   @include test("rhythm") {
     @include assert-equal(rhythm(5), 40px);
     @include assert-equal(rhythm(5, -1px), 39px);
