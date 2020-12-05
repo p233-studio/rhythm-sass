@@ -105,6 +105,14 @@ $font-map-5: (
     @include assert-equal(rhythm(5), 40px);
     @include assert-equal(rhythm(5, -1px), 39px);
     @include assert-equal(rhythm(5, 1px), 41px);
+
+    $global-rhythm-size: 0.5rem !global;
+
+    @include assert-equal(rhythm(5), 2.5rem);
+    @include assert-equal(rhythm(5, -1px), calc(2.5rem - 1px));
+    @include assert-equal(rhythm(5, 1px), calc(2.5rem + 1px));
+
+    $global-rhythm-size: 8px !global;
   }
 
   @include test("rhythm-top") {

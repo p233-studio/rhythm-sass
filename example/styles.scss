@@ -1,8 +1,9 @@
 @use "../rhythm" as * with (
   $default-baseline: 0.112061 // for Noto serif font family
+  // , $global-rhythm-size: 0.5rem // Uncomment this line if you want to use the rem unit for rhythm size
 );
 
-$gutter-width: 16px;
+$gutter-width: 16px; // Change the value to 1rem if you want to use the rem unit for rhythm size
 $heading-font: (
   font-size: 38px,
   line-height: 6,
