@@ -33,8 +33,8 @@ $font-map-5: (
     @include assert-equal(_validate-font-size(16px), 16px);
   }
 
-  @include test("_validate-rhythm-grids") {
-    @include assert-equal(_validate-rhythm-grids(8), 8);
+  @include test("_validate-rhythms") {
+    @include assert-equal(_validate-rhythms(8), 8);
   }
 
   @include test("_validate-line-height") {
