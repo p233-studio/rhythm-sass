@@ -1,0 +1,137 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font: 16px/1 "Noto Serif", serif;
+  background-image: linear-gradient(to bottom, rgba(255, 0, 0, 0.1) 0.5rem, transparent 0.5rem);
+  background-size: 100% 1rem;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.container {
+  max-width: 640px;
+  padding-top: 2.578644875rem;
+  padding-right: 1rem;
+  padding-bottom: 3.137939rem;
+  padding-left: 1rem;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.heading {
+  font-size: 2.375rem;
+  line-height: 3rem;
+  font-weight: 700;
+  margin-bottom: 0.887939rem;
+}
+
+.heading-h2 {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 700;
+  margin-top: 1.0560305rem;
+  margin-bottom: calc(0.9439695rem - 1px);
+  display: table;
+  border-bottom: 1px solid;
+}
+
+.subheading {
+  font-size: 1.375rem;
+  line-height: 2rem;
+  font-weight: 400;
+  margin-bottom: 1.395477125rem;
+}
+
+.paragraph {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+.paragraph + .paragraph {
+  margin-top: 1rem;
+}
+
+.fake-image {
+  height: 20rem;
+  margin-top: 1.137939rem;
+  margin-bottom: 1.362061rem;
+  background: rgba(128, 128, 128, 0.5);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 1.137939rem;
+  margin-right: -5rem;
+  margin-bottom: -0.137939rem;
+  margin-left: -5rem;
+}
+
+.grid {
+  flex: 1 0 50%;
+  max-width: 50%;
+  padding-right: 1rem;
+  padding-left: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.card {
+  padding: calc(1rem - 1px) 1rem;
+  border: 1px solid rgba(128, 128, 128, 0.5);
+  border-radius: 4px;
+}
+.card__heading {
+  font-size: 1.28125rem;
+  line-height: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.6091078437rem;
+}
+.card__content {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  margin-bottom: 0.637939rem;
+}
+.card__fake-image {
+  height: 6rem;
+  margin-bottom: 0.7529531563rem;
+  background: rgba(128, 128, 128, 0.5);
+}
+.card__button {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 2.5rem;
+  padding: 0;
+  padding-right: 1.5rem;
+  padding-left: 1.5rem;
+  font-family: inherit;
+  cursor: pointer;
+  background: rgba(128, 128, 128, 0.5);
+  border: none;
+  border-radius: 2px;
+  font-size: 0.9375rem;
+  line-height: 1rem;
+  padding-top: 0.6363071875rem;
+}
+
+.list {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+.list li {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+.list li:not(:last-child) {
+  margin-bottom: 0.5rem;
+}
+
+/*# sourceMappingURL=styles.css.map */
