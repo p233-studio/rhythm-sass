@@ -5,7 +5,7 @@
   "main": "rhythm.scss",
   "scripts": {
     "test": "jest",
-    "build-example": "./node_modules/.bin/sass ./example/styles.scss:./example/styles.css --no-source-map"
+    "build-example": "./node_modules/.bin/sass ./example/styles.scss:./example/styles.css"
   },
   "repository": {
     "type": "git",
