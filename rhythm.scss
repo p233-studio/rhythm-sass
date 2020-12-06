@@ -159,22 +159,16 @@ $global-rem-size: 16px !default;
 }
 
 @function baseline-top($font-map, $rhythms, $offset: 0) {
-  $_rhythms: _validate-rhythms($rhythms);
-
   @return rhythm-bottom($font-map, $rhythms, $offset);
 }
 
 @function baseline-bottom($font-map, $rhythms, $offset: 0) {
-  $_rhythms: _validate-rhythms($rhythms);
-
   @return rhythm-top($font-map, $rhythms, $offset);
 }
 
 @function baseline-between($above-font-map, $below-font-map, $rhythms, $offset: 0) {
-  $_rhythms: _validate-rhythms($rhythms);
-
   @return _calc-height-with-offset(
-    baseline-bottom($above-font-map, $_rhythms) - _calc-top-font-height($below-font-map),
+    baseline-bottom($above-font-map, $rhythms) - _calc-top-font-height($below-font-map),
     $offset
   );
 }
