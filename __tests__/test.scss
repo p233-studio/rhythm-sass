@@ -91,12 +91,12 @@ $font-map-5: (
     @include assert-equal(_calc-top-font-height($font-map-1), 29px);
   }
 
-  @include test("_calc-height") {
-    @include assert-equal(_calc-height(20px, 0), 20px);
-    @include assert-equal(_calc-height(20px, 1px), 21px);
-    @include assert-equal(_calc-height(20px, -1px), 19px);
-    @include assert-equal(_calc-height(2rem, 1px), calc(2rem + 1px));
-    @include assert-equal(_calc-height(2rem, -1px), calc(2rem - 1px));
+  @include test("_calc-height-with-offset") {
+    @include assert-equal(_calc-height-with-offset(20px, 0), 20px);
+    @include assert-equal(_calc-height-with-offset(20px, 1px), 21px);
+    @include assert-equal(_calc-height-with-offset(20px, -1px), 19px);
+    @include assert-equal(_calc-height-with-offset(2rem, 1px), calc(2rem + 1px));
+    @include assert-equal(_calc-height-with-offset(2rem, -1px), calc(2rem - 1px));
   }
 }
 
