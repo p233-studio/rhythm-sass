@@ -67,7 +67,7 @@ $global-rem-size: 16px !default;
   @return meta.type-of($value) == number and math.is-unitless($value) and $value % 1 == 0;
 }
 
-@function _convert-font-size-unit($value) {
+@function _convert-font-size-unit-to-rem-unit($value) {
   $_font-unit: math.unit($value);
   $_rhythm-unit: math.unit($global-rhythm-size);
 
@@ -100,28 +100,23 @@ $global-rem-size: 16px !default;
   @return $_result;
 }
 
-@function _calc-bottom-font-height($font-map) {
+@function _calc-baseline-height($font-map, $direction) {
   $_font-size: _validate-font-size(map.get($font-map, font-size));
-  $_font-size: _convert-font-size-unit($_font-size);
+  $_font-size: _convert-font-size-unit-to-rem-unit($_font-size);
   $_line-height: _validate-line-height(map.get($font-map, line-height));
   $_baseline: _validate-baseline(map.get($font-map, baseline) or $default-baseline);
   $_half-space: ($global-rhythm-size * $_line-height - $_font-size) / 2;
-  $_baseline-height: $_font-size * $_baseline;
-  $_result: $_half-space + $_baseline-height;
+  $_height: 0 !default;
 
-  @return if(math.unit($global-rhythm-size) == "rem", $_result, math.round($_result));
-}
+  @if $direction == "top" {
+    $_height: $_half-space + $_font-size * (1 - $_baseline);
+  } @else if $direction == "bottom" {
+    $_height: $_half-space + $_font-size * $_baseline;
+  } @else {
+    @error "The '_calc-baseline-height' function requires a direction argument of 'top' or 'bottom'.";
+  }
 
-@function _calc-top-font-height($font-map) {
-  $_font-size: _validate-font-size(map.get($font-map, font-size));
-  $_font-size: _convert-font-size-unit($_font-size);
-  $_line-height: _validate-line-height(map.get($font-map, line-height));
-  $_baseline: _validate-baseline(map.get($font-map, baseline) or $default-baseline);
-  $_half-space: ($global-rhythm-size * $_line-height - $_font-size) / 2;
-  $_baseline-height: $_font-size * (1 - $_baseline);
-  $_result: $_half-space + $_baseline-height;
-
-  @return if(math.unit($global-rhythm-size) == "rem", $_result, math.round($_result));
+  @return if(math.unit($global-rhythm-size) == "rem", $_height, math.round($_height));
 }
 
 @function _calc-height-with-offset($height, $offset) {
@@ -141,21 +136,21 @@ $global-rem-size: 16px !default;
 // ------------------ //
 
 @function rhythm($rhythms, $offset: 0) {
-  $_rhythms: _validate-rhythms($rhythms);
+  $_rhythms-height: _validate-rhythms($rhythms) * $global-rhythm-size;
 
-  @return _calc-height-with-offset($global-rhythm-size * $_rhythms, $offset);
+  @return _calc-height-with-offset($_rhythms-height, $offset);
 }
 
 @function rhythm-top($font-map, $rhythms, $offset: 0) {
-  $_rhythms: _validate-rhythms($rhythms);
+  $_rhythms-height: _validate-rhythms($rhythms) * $global-rhythm-size;
 
-  @return _calc-height-with-offset($global-rhythm-size * $_rhythms - _calc-bottom-font-height($font-map), $offset);
+  @return _calc-height-with-offset($_rhythms-height - _calc-baseline-height($font-map, "bottom"), $offset);
 }
 
 @function rhythm-bottom($font-map, $rhythms, $offset: 0) {
-  $_rhythms: _validate-rhythms($rhythms);
+  $_rhythms-height: _validate-rhythms($rhythms) * $global-rhythm-size;
 
-  @return _calc-height-with-offset($global-rhythm-size * $_rhythms - _calc-top-font-height($font-map), $offset);
+  @return _calc-height-with-offset($_rhythms-height - _calc-baseline-height($font-map, "top"), $offset);
 }
 
 @function baseline-top($font-map, $rhythms, $offset: 0) {
@@ -168,7 +163,7 @@ $global-rem-size: 16px !default;
 
 @function baseline-between($above-font-map, $below-font-map, $rhythms, $offset: 0) {
   @return _calc-height-with-offset(
-    baseline-bottom($above-font-map, $rhythms) - _calc-top-font-height($below-font-map),
+    baseline-bottom($above-font-map, $rhythms) - _calc-baseline-height($below-font-map, "top"),
     $offset
   );
 }
