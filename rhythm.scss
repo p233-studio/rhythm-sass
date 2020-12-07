@@ -71,10 +71,10 @@ $global-rem-size: 16px !default;
   $_font-unit: math.unit($value);
   $_rhythm-unit: math.unit($global-rhythm-size);
 
-  @if $_font-unit == $_rhythm-unit {
-    @return $value;
-  } @else if math.unit($global-rem-size) != px {
+  @if math.unit($global-rem-size) != px {
     @error "Can only accept the '$global-rem-size' value in pixel.";
+  } @else if $_font-unit == $_rhythm-unit {
+    @return $value;
   } @else if $_font-unit == rem and $_rhythm-unit == px {
     @return $value / 1rem * $global-rem-size;
   } @else if $_font-unit == px and $_rhythm-unit == rem {
