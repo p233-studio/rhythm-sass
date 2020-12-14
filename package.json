@@ -2,7 +2,7 @@
   "name": "rhythm-sass",
   "version": "1.0.0",
   "description": "",
-  "main": "rhythm.scss",
+  "main": "./src/rhythm.scss",
   "scripts": {
     "test": "jest",
     "build-examples": "./node_modules/.bin/sass ./examples/px-unit/styles.scss:./examples/px-unit/styles.css ./examples/rem-unit/styles.scss:./examples/rem-unit/styles.css --no-source-map"

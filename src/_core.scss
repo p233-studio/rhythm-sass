@@ -1,0 +1,147 @@
+@use "sass:map";
+@use "sass:list";
+@use "sass:math";
+@use "sass:meta";
+
+// ---------------------- //
+//  Validation Functions  //
+// ---------------------- //
+
+@function is-valid-baseline($value) {
+  @return meta.type-of($value) == number and math.is-unitless($value) and $value > 0 and $value < 1;
+}
+
+@function is-valid-rhythms($value) {
+  @return meta.type-of($value) == number and math.is-unitless($value) and $value % 1 == 0;
+}
+
+@function has-valid-unit($value) {
+  @return list.index((px rem), math.unit($value)) != null;
+}
+
+@function validate-font-map($value) {
+  @if meta.type-of($value) != "map" {
+    @error "Invalid $font-map value: '#{$value}', it should be a map at least with keys of 'font-size' and 'line-height'.";
+  }
+
+  $_font-size: map.get($value, font-size);
+
+  @if not $_font-size {
+    @error "Missing the 'font-size' key in $font-map.";
+  } @else if meta.type-of($_font-size) != number {
+    @error "Invalid 'font-size' value in $font-map: '#{$_font-size}', it should be a number.";
+  } @else if not has-valid-unit($_font-size) {
+    @error "Invalid 'font-size' value in $font-map: '#{$_font-size}', it should be in pixel or rem unit.";
+  }
+
+  $_line-height: map.get($value, line-height);
+
+  @if not $_line-height {
+    @error "Missing the 'line-height' key in $font-map.";
+  } @else if not is-valid-rhythms($_line-height) {
+    @error "Invalid 'line-height' value in $font-map: '#{$_line-height}'. The 'line-height' key represents the numbers of rhythm, it should be a unitless integer.";
+  }
+
+  $_baseline: map.get($value, baseline);
+
+  @if $_baseline and not is-valid-baseline($_baseline) {
+    @error "Invalid 'baseline' value in $font-map: '#{$_baseline}', it should be a decimal number between 0 and 1.";
+  }
+
+  @return $value;
+}
+
+@function validate-rhythms($value) {
+  @if is-valid-rhythms($value) {
+    @return $value;
+  }
+
+  @error "Invalid $rhythms value: '#{$value}', it should be a unitless integer.";
+}
+
+@function validate-offset($value) {
+  @if meta.type-of($value) == number {
+    @return $value;
+  }
+
+  @error "Invalid $offset value: '#{$value}', it should be a number.";
+}
+
+@function validate-unused-property($used-property, $property) {
+  @if $used-property == null or $used-property == $property {
+    @return $property;
+  }
+
+  @error "Can not calculate rhythms for both '#{$used-property}' and '#{$property}' at the same time.";
+}
+
+// ----------------------- //
+//  Calculation Functions  //
+// ----------------------- //
+
+@function convert-font-size-to-rhythm-unit($value, $globals) {
+  $_font-unit: math.unit($value);
+  $_global-rem-size: map.get($globals, global-rem-size);
+  $_global-rhythm-size: map.get($globals, global-rhythm-size);
+  $_rhythm-unit: math.unit($_global-rhythm-size);
+
+  @if $_font-unit == rem and $_rhythm-unit == px {
+    @return $value / 1rem * $_global-rem-size;
+  } @else if $_font-unit == px and $_rhythm-unit == rem {
+    @return $value / $_global-rem-size * 1rem;
+  } @else {
+    @return $value;
+  }
+}
+
+@function calc-baseline-height($font-map, $direction, $globals) {
+  $_font-size: map.get($font-map, font-size);
+  $_font-size: convert-font-size-to-rhythm-unit($_font-size, $globals);
+  $_rhythms: map.get($font-map, line-height);
+  $_baseline: map.get($font-map, baseline) or map.get($globals, default-baseline);
+  $_global-rhythm-size: map.get($globals, global-rhythm-size);
+  $_half-space: ($_global-rhythm-size * $_rhythms - $_font-size) / 2;
+  $_height: 0 !default;
+
+  @if $direction == "top" {
+    $_height: $_half-space + $_font-size * (1 - $_baseline);
+  } @else if $direction == "bottom" {
+    $_height: $_half-space + $_font-size * $_baseline;
+  } @else {
+    @error "The $direction parameter should only has value of 'top' or 'bottom'.";
+  }
+
+  @return if(math.unit($_global-rhythm-size) == "rem", $_height, math.round($_height));
+}
+
+@function calc-height-with-offset($height, $offset) {
+  @if $offset == 0 {
+    @return $height;
+  } @else if math.unit($height) == math.unit($offset) {
+    @return $height + $offset;
+  } @else if $offset > 0 {
+    @return calc(#{$height} + #{$offset});
+  } @else {
+    @return calc(#{$height} - #{math.abs($offset)});
+  }
+}
+
+// ---------------- //
+//  List Functions  //
+// ---------------- //
+
+@function first($list) {
+  @return list.nth($list, 1);
+}
+
+@function rest($list) {
+  $_result: ();
+
+  @if list.length($list) >= 2 {
+    @for $i from 2 through list.length($list) {
+      $_result: list.append($_result, list.nth($list, $i));
+    }
+  }
+
+  @return $_result;
+}

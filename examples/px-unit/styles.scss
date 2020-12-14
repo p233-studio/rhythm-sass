@@ -1,4 +1,4 @@
-@use "../../rhythm" as * with (
+@use "../../src/rhythm" as * with (
   $default-baseline: 0.112061 // for Noto serif font family
 );
 

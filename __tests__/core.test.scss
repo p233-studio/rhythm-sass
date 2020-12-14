@@ -1,0 +1,98 @@
+@use "sass:map";
+@use "true" as *;
+@use "font-maps" as *;
+@use "../src/core" as *;
+
+$_globals: (
+  default-baseline: 0.112061,
+  global-rhythm-size: 8px,
+  global-rem-size: 16px
+);
+
+@include test-module("Test validation functions:") {
+  @include test("is-valid-baseline") {
+    @include assert-equal(is-valid-baseline(1), false);
+    @include assert-equal(is-valid-baseline(0.1), true);
+  }
+
+  @include test("is-valid-rhythms") {
+    @include assert-equal(is-valid-rhythms(1), true);
+    @include assert-equal(is-valid-rhythms(1px), false);
+    @include assert-equal(is-valid-rhythms(""), false);
+  }
+
+  @include test("has-valid-unit") {
+    @include assert-equal(has-valid-unit(1px), true);
+    @include assert-equal(has-valid-unit(1rem), true);
+    @include assert-equal(has-valid-unit(1pt), false);
+    @include assert-equal(has-valid-unit(1cm), false);
+  }
+
+  @include test("validate-font-map") {
+    $_font-map: (
+      font-size: 16px,
+      line-height: 5
+    );
+
+    @include assert-equal(validate-font-map($_font-map), $_font-map);
+  }
+
+  @include test("validate-rhythms") {
+    @include assert-equal(validate-rhythms(5), 5);
+  }
+
+  @include test("validate-offset") {
+    @include assert-equal(validate-offset(0.112061), 0.112061);
+  }
+
+  @include test("validate-unused-property") {
+    @include assert-equal(validate-unused-property(null, margin-top), margin-top);
+    @include assert-equal(validate-unused-property(margin-top, margin-top), margin-top);
+  }
+}
+
+@include test-module("Test calculation functions:") {
+  @include test("convert-font-size-to-rhythm-unit") {
+    @include assert-equal(convert-font-size-to-rhythm-unit(10px, $_globals), 10px);
+    @include assert-equal(convert-font-size-to-rhythm-unit(1rem, $_globals), 16px);
+
+    $global-rhythm-size: 0.5rem;
+    $_globals-1: map.merge(
+      $_globals,
+      (
+        global-rhythm-size: 0.5rem
+      )
+    );
+
+    @include assert-equal(convert-font-size-to-rhythm-unit(16px, $_globals-1), 1rem);
+
+    $global-rhythm-size: 8px;
+  }
+
+  @include test("calc-baseline-height") {
+    @include assert-equal(calc-baseline-height($font-map-1, "top", $_globals), 29px);
+    @include assert-equal(calc-baseline-height($font-map-1, "bottom", $_globals), 11px);
+  }
+
+  @include test("calc-height-with-offset") {
+    @include assert-equal(calc-height-with-offset(20px, 0), 20px);
+    @include assert-equal(calc-height-with-offset(20px, 1px), 21px);
+    @include assert-equal(calc-height-with-offset(20px, -1px), 19px);
+    @include assert-equal(calc-height-with-offset(2rem, 1px), calc(2rem + 1px));
+    @include assert-equal(calc-height-with-offset(2rem, -1px), calc(2rem - 1px));
+  }
+}
+
+@include test-module("Test list functions:") {
+  @include test("first") {
+    @include assert-equal(first((1, 2, 3)), 1);
+    @include assert-equal(first([1]), 1);
+    @include assert-equal(first(1), 1);
+  }
+
+  @include test("rest") {
+    @include assert-equal(rest((1, 2, 3)), (2 3));
+    @include assert-equal(rest([1]), ());
+    @include assert-equal(rest(()), ());
+  }
+}

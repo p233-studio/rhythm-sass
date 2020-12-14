@@ -1,0 +1,120 @@
+@use "sass:map";
+@use "sass:math";
+@use "sass:meta";
+@use "core";
+
+// ------------------ //
+//  Global Variables  //
+// ------------------ //
+
+$default-baseline: 0 !default;
+
+@if not core.is-valid-baseline($default-baseline) {
+  @error "Invalid $default-baseline ratio: '#{$default-baseline}', it should be a decimal number between 0 and 1.";
+}
+
+$global-rhythm-size: 8px !default;
+
+@if meta.type-of($global-rhythm-size) != number or not core.has-valid-unit($global-rhythm-size) {
+  @error "Invaild $global-rhythm-size value: '#{$global-rhythm-size}', it should be in pixel or rem unit.";
+}
+
+$global-rem-size: 16px !default;
+
+@if meta.type-of($global-rem-size) != number or math.unit($global-rem-size) != px {
+  @error "Invaild $global-rem-size value: '#{$global-rem-size}', it should be in pixel unit.";
+}
+
+$_globals: (
+  default-baseline: $default-baseline,
+  global-rhythm-size: $global-rhythm-size,
+  global-rem-size: $global-rem-size
+);
+
+// ------------------ //
+//  Rhythm Functions  //
+// ------------------ //
+
+@function rhythm($rhythms, $offset: 0) {
+  $_rhythms: core.validate-rhythms($rhythms);
+  $_height: $global-rhythm-size * $_rhythms;
+  $_offset: core.validate-offset($offset);
+
+  @return core.calc-height-with-offset($_height, $_offset);
+}
+
+@function rhythm-top($font-map, $rhythms, $offset: 0) {
+  $_font-map: core.validate-font-map($font-map);
+  $_rhythms: core.validate-rhythms($rhythms);
+  $_height: $global-rhythm-size * $_rhythms - core.calc-baseline-height($_font-map, "bottom", $_globals);
+  $_offset: core.validate-offset($offset);
+
+  @return core.calc-height-with-offset($_height, $_offset);
+}
+
+@function rhythm-bottom($font-map, $rhythms, $offset: 0) {
+  $_font-map: core.validate-font-map($font-map);
+  $_rhythms: core.validate-rhythms($rhythms);
+  $_height: $global-rhythm-size * $_rhythms - core.calc-baseline-height($_font-map, "top", $_globals);
+  $_offset: core.validate-offset($offset);
+
+  @return core.calc-height-with-offset($_height, $_offset);
+}
+
+@function baseline-top($font-map, $rhythms, $offset: 0) {
+  @return rhythm-bottom($font-map, $rhythms, $offset);
+}
+
+@function baseline-bottom($font-map, $rhythms, $offset: 0) {
+  @return rhythm-top($font-map, $rhythms, $offset);
+}
+
+@function baseline-between($above-font-map, $below-font-map, $rhythms, $offset: 0) {
+  $_above-font-map: core.validate-font-map($above-font-map);
+  $_below-font-map: core.validate-font-map($below-font-map);
+  $_rhythms: core.validate-rhythms($rhythms);
+  $_height: baseline-bottom($_above-font-map, $_rhythms) - core.calc-baseline-height($_below-font-map, "top", $_globals);
+  $_offset: core.validate-offset($offset);
+
+  @return core.calc-height-with-offset($_height, $_offset);
+}
+
+// -------- //
+//  Mixins  //
+// -------- //
+
+@mixin font($font-map, $properties-map: ()) {
+  $_font-map: core.validate-font-map($font-map);
+
+  font-size: map.get($_font-map, font-size);
+  line-height: $global-rhythm-size * map.get($_font-map, line-height);
+
+  @each $_property in map.keys(map.remove($_font-map, font-size, line-height, baseline)) {
+    #{$_property}: map.get($_font-map, $_property);
+  }
+
+  $_used-top-property: null;
+  $_used-bottom-property: null;
+
+  @each $_property, $_value in $properties-map {
+    @if $_property == margin-top or $_property == padding-top {
+      $_used-top-property: core.validate-unused-property($_used-top-property, $_property);
+
+      @if meta.type-of(core.first($_value)) == map {
+        #{$_property}: baseline-between(core.first($_value), $_font-map, core.rest($_value)...);
+      } @else {
+        #{$_property}: baseline-top($_font-map, $_value...);
+      }
+    } @else if $_property == margin-bottom or $_property == padding-bottom {
+      $_used-bottom-property: core.validate-unused-property($_used-bottom-property, $_property);
+
+      @if meta.type-of(core.first($_value)) == map {
+        #{$_property}: baseline-between($_font-map, core.first($_value), core.rest($_value)...);
+      } @else {
+        #{$_property}: baseline-bottom($_font-map, $_value...);
+      }
+    } @else {
+      @error "Unsupported property '#{$_property}' in $properties-map.";
+    }
+  }
+}

@@ -1,106 +1,12 @@
-@import "true";
-@import "./rhythm";
-
-$default-baseline: 0.112061 !global;
-$font-map-1: (
-  font-size: 24px,
-  line-height: 5
-);
-$font-map-2: (
-  font-size: 16px,
-  line-height: 3
-);
-$font-map-2-1: (
-  font-size: 1rem,
-  line-height: 3
-);
-$font-map-3: (
-  font-size: 17px,
-  line-height: 3,
-  baseline: 0.112061
-);
-$font-map-4: (
-  font-size: 17px,
-  line-height: 3
-);
-$font-map-5: (
-  font-size: 12px,
-  line-height: 2
+@use "true" as *;
+@use "font-maps" as *;
+@use "../src/rhythm" as * with (
+  $default-baseline: 0.112061, // for Noto serif font family
+  $global-rhythm-size: 8px,
+  $global-rem-size: 16px,
 );
 
-@include test-module("Test validation functions:") {
-  @include test("_validate-font-size") {
-    @include assert-equal(_validate-font-size(16px), 16px);
-  }
-
-  @include test("_validate-rhythms") {
-    @include assert-equal(_validate-rhythms(8), 8);
-  }
-
-  @include test("_validate-line-height") {
-    @include assert-equal(_validate-line-height(8), 8);
-  }
-
-  @include test("_validate-baseline") {
-    @include assert-equal(_validate-baseline(0.112061), 0.112061);
-  }
-
-  @include test("_validate-unused-property") {
-    @include assert-equal(_validate-unused-property(null, margin-top), margin-top);
-    @include assert-equal(_validate-unused-property(margin-top, margin-top), margin-top);
-  }
-}
-
-@include test-module("Test private functions:") {
-  @include test("_is-unitless-integer") {
-    @include assert-equal(_is-unitless-integer(0), true);
-    @include assert-equal(_is-unitless-integer(10), true);
-    @include assert-equal(_is-unitless-integer(-10), true);
-    @include assert-equal(_is-unitless-integer(10px), false);
-    @include assert-equal(_is-unitless-integer("10px"), false);
-  }
-
-  @include test("_convert-font-size-unit-to-rem-unit") {
-    @include assert-equal(_convert-font-size-unit-to-rem-unit(10px), 10px);
-    @include assert-equal(_convert-font-size-unit-to-rem-unit(1rem), 16px);
-
-    $global-rhythm-size: 0.5rem !global;
-
-    @include assert-equal(_convert-font-size-unit-to-rem-unit(16px), 1rem);
-
-    $global-rhythm-size: 8px !global;
-  }
-
-  @include test("_first") {
-    @include assert-equal(_first((1, 2, 3)), 1);
-    @include assert-equal(_first([1]), 1);
-    @include assert-equal(_first(1), 1);
-  }
-
-  @include test("_rest") {
-    @include assert-equal(_rest((1, 2, 3)), (2 3));
-    @include assert-equal(_rest([1]), ());
-    @include assert-equal(_rest(()), ());
-  }
-
-  @include test("_calc-bottom-font-height") {
-    @include assert-equal(_calc-baseline-height($font-map-1, "bottom"), 11px);
-  }
-
-  @include test("_calc-top-font-height") {
-    @include assert-equal(_calc-baseline-height($font-map-1, "top"), 29px);
-  }
-
-  @include test("_calc-height-with-offset") {
-    @include assert-equal(_calc-height-with-offset(20px, 0), 20px);
-    @include assert-equal(_calc-height-with-offset(20px, 1px), 21px);
-    @include assert-equal(_calc-height-with-offset(20px, -1px), 19px);
-    @include assert-equal(_calc-height-with-offset(2rem, 1px), calc(2rem + 1px));
-    @include assert-equal(_calc-height-with-offset(2rem, -1px), calc(2rem - 1px));
-  }
-}
-
-@include test-module("Test public functions:") {
+@include test-module("Test rhythm functions:") {
   @include test("rhythm") {
     @include assert-equal(rhythm(5), 40px);
     @include assert-equal(rhythm(5, -1px), 39px);
