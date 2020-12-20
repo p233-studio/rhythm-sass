@@ -24,8 +24,11 @@ $_globals: (
   @include test("has-valid-unit") {
     @include assert-equal(has-valid-unit(1px), true);
     @include assert-equal(has-valid-unit(1rem), true);
-    @include assert-equal(has-valid-unit(1pt), false);
-    @include assert-equal(has-valid-unit(1cm), false);
+    @include assert-equal(has-valid-unit(1pt), true);
+    @include assert-equal(has-valid-unit(1cm), true);
+    @include assert-equal(has-valid-unit(1em), false);
+    @include assert-equal(has-valid-unit(1vw), false);
+    @include assert-equal(has-valid-unit(1vh), false);
   }
 
   @include test("validate-font-map") {
@@ -56,7 +59,6 @@ $_globals: (
     @include assert-equal(convert-font-size-to-rhythm-unit(10px, $_globals), 10px);
     @include assert-equal(convert-font-size-to-rhythm-unit(1rem, $_globals), 16px);
 
-    $global-rhythm-size: 0.5rem;
     $_globals-1: map.merge(
       $_globals,
       (
@@ -66,7 +68,14 @@ $_globals: (
 
     @include assert-equal(convert-font-size-to-rhythm-unit(16px, $_globals-1), 1rem);
 
-    $global-rhythm-size: 8px;
+    $_globals-2: map.merge(
+      $_globals,
+      (
+        global-rhythm-size: 10pt
+      )
+    );
+
+    @include assert-equal(convert-font-size-to-rhythm-unit(16pt, $_globals-2), 16pt);
   }
 
   @include test("calc-baseline-height") {

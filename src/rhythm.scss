@@ -16,13 +16,13 @@ $default-baseline: 0 !default;
 $global-rhythm-size: 8px !default;
 
 @if meta.type-of($global-rhythm-size) != number or not core.has-valid-unit($global-rhythm-size) {
-  @error "Invaild $global-rhythm-size value: '#{$global-rhythm-size}', it should be in pixel or rem unit.";
+  @error "Invaild $global-rhythm-size value: '#{$global-rhythm-size}', it should be in absolute length unit or the rem unit.";
 }
 
 $global-rem-size: 16px !default;
 
-@if meta.type-of($global-rem-size) != number or math.unit($global-rem-size) != px {
-  @error "Invaild $global-rem-size value: '#{$global-rem-size}', it should be in pixel unit.";
+@if meta.type-of($global-rem-size) != number or not core.has-valid-unit($global-rem-size) {
+  @error "Invaild $global-rem-size value: '#{$global-rem-size}', it should be in absolute length unit or the rem unit.";
 }
 
 $_globals: (
