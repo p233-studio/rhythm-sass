@@ -89,9 +89,9 @@
   @if $_font-size-unit == $_rhythm-unit {
     @return $value;
   } @else if $_font-size-unit == rem and $_rhythm-unit == px {
-    @return $value / 1rem * $_global-rem-size;
+    @return math.div($value, 1rem) * $_global-rem-size;
   } @else if $_font-size-unit == px and $_rhythm-unit == rem {
-    @return $value / $_global-rem-size * 1rem;
+    @return math.div($value, $_global-rem-size) * 1rem;
   } @else {
     @error "Rhythm-scss currently can only convert the 'font-size' unit from 'px' to 'rem', or vice versa, when the 'font-size' and $global-rhythm-size are in different units. Otherwise, please make sure they are in the same unit, for example, both of them are in the 'pt' unit.";
   }
@@ -103,7 +103,7 @@
   $_rhythms: map.get($font-map, line-height);
   $_baseline: map.get($font-map, baseline) or map.get($globals, default-baseline);
   $_global-rhythm-size: map.get($globals, global-rhythm-size);
-  $_half-space: ($_global-rhythm-size * $_rhythms - $_font-size) / 2;
+  $_half-space: math.div($_global-rhythm-size * $_rhythms - $_font-size, 2);
   $_height: 0 !default;
 
   @if $direction == "top" {
