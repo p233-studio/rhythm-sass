@@ -69,7 +69,7 @@
 }
 
 @function validate-unused-property($used-property, $property) {
-  @if $used-property == null or $used-property == $property {
+  @if not $used-property or $used-property == $property {
     @return $property;
   }
 

@@ -101,7 +101,9 @@ $_globals: (
       $_used-top-property: core.validate-unused-property($_used-top-property, $_property);
 
       @if meta.type-of(core.first($_value)) == map {
-        #{$_property}: baseline-between(core.first($_value), $_font-map, core.rest($_value)...);
+        $_params: core.rest($_value);
+
+        #{$_property}: baseline-between(core.first($_value), $_font-map, $_params...);
       } @else {
         #{$_property}: baseline-top($_font-map, $_value...);
       }
@@ -109,7 +111,9 @@ $_globals: (
       $_used-bottom-property: core.validate-unused-property($_used-bottom-property, $_property);
 
       @if meta.type-of(core.first($_value)) == map {
-        #{$_property}: baseline-between($_font-map, core.first($_value), core.rest($_value)...);
+        $_params: core.rest($_value);
+
+        #{$_property}: baseline-between($_font-map, core.first($_value), $_params...);
       } @else {
         #{$_property}: baseline-bottom($_font-map, $_value...);
       }
