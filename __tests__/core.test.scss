@@ -87,8 +87,8 @@ $_globals: (
     @include assert-equal(calc-height-with-offset(20px, 0), 20px);
     @include assert-equal(calc-height-with-offset(20px, 1px), 21px);
     @include assert-equal(calc-height-with-offset(20px, -1px), 19px);
-    @include assert-equal(calc-height-with-offset(2rem, 1px), calc(2rem + 1px));
-    @include assert-equal(calc-height-with-offset(2rem, -1px), calc(2rem - 1px));
+    @include assert-equal(calc-height-with-offset(2rem, 1px), calc(2rem + 1px), null, true);
+    @include assert-equal(calc-height-with-offset(2rem, -1px), calc(2rem - 1px), null, true);
   }
 }
 

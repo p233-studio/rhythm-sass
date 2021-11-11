@@ -1,10 +1,12 @@
 @use "true" as *;
 @use "font-maps" as *;
-@use "../src/rhythm" as * with (
-  $default-baseline: 0.112061, // for Noto serif font family
-  $global-rhythm-size: 8px,
-  $global-rem-size: 16px,
-);
+@use "../src/rhythm" as * with
+  (
+    $default-baseline: 0.112061,
+    // for Noto serif font family
+    $global-rhythm-size: 8px,
+    $global-rem-size: 16px
+  );
 
 @include test-module("Test rhythm functions:") {
   @include test("rhythm") {
@@ -15,8 +17,8 @@
     $global-rhythm-size: 0.5rem !global;
 
     @include assert-equal(rhythm(5), 2.5rem);
-    @include assert-equal(rhythm(5, -1px), calc(2.5rem - 1px));
-    @include assert-equal(rhythm(5, 1px), calc(2.5rem + 1px));
+    @include assert-equal(rhythm(5, -1px), calc(2.5rem - 1px), null, true);
+    @include assert-equal(rhythm(5, 1px), calc(2.5rem + 1px), null, true);
 
     $global-rhythm-size: 8px !global;
   }
