@@ -1,7 +1,7 @@
 @use "sass:map";
 @use "true" as *;
 @use "font-maps" as *;
-@use "../src/core" as *;
+@use "../src/lib" as *;
 
 $_globals: (
   default-baseline: 0.112061,
