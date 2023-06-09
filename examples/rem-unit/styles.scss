@@ -1,3 +1,4 @@
+@use "sass:math";
 @use "../../src/rhythm" as * with (
   $default-baseline: 0.112061, // for Noto serif font family
   $global-rhythm-size: 0.5rem
@@ -5,17 +6,17 @@
 
 $gutter-width: 1rem;
 $heading-font: (
-  font-size: 38 / 16 * 1rem,
+  font-size: math.div(38, 16) * 1rem,
   line-height: 6,
   font-weight: 700
 );
 $heading-h2-font: (
-  font-size: 24 / 16 * 1rem,
+  font-size: math.div(24, 16) * 1rem,
   line-height: 4,
   font-weight: 700
 );
 $subheading-font: (
-  font-size: 22 / 16 * 1rem,
+  font-size: math.div(22, 16) * 1rem,
   line-height: 4,
   font-weight: 400
 );
@@ -24,12 +25,12 @@ $paragraph-font: (
   line-height: 3
 );
 $card-heading-font: (
-  font-size: 20.5 / 16 * 1rem,
+  font-size: math.div(20.5, 16) * 1rem,
   line-height: 3,
   font-weight: 700
 );
 $card-button-font: (
-  font-size: 15 / 16 * 1rem,
+  font-size: math.div(15, 16) * 1rem,
   line-height: 2
 );
 
