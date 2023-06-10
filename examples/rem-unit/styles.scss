@@ -42,8 +42,6 @@ $card-button-font: (
 body {
   margin: 0;
   font: 16px/1 "Noto Serif", serif;
-  background-image: linear-gradient(to bottom, rgba(255, 0, 0, 0.1) $rhythm-size, transparent $rhythm-size);
-  background-size: 100% $rhythm-size * 2;
 }
 
 h1,
@@ -191,3 +189,5 @@ p {
     }
   }
 }
+
+@include draw-rhythms;
