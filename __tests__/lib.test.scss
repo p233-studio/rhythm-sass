@@ -3,16 +3,16 @@
 @use "font-maps" as *;
 @use "../src/lib" as *;
 
-$_globals: (
-  default-baseline: 0.112061,
-  global-rhythm-size: 8px,
-  global-rem-size: 16px
+$config: (
+  baseline-ratio: 0.112061,
+  rhythm-size: 8px,
+  rem-size: 16px
 );
 
 @include test-module("Test validation functions:") {
-  @include test("is-valid-baseline") {
-    @include assert-equal(is-valid-baseline(1), false);
-    @include assert-equal(is-valid-baseline(0.1), true);
+  @include test("is-valid-baseline-ratio") {
+    @include assert-equal(is-valid-baseline-ratio(1), false);
+    @include assert-equal(is-valid-baseline-ratio(0.1), true);
   }
 
   @include test("is-valid-rhythms") {
@@ -56,31 +56,31 @@ $_globals: (
 
 @include test-module("Test calculation functions:") {
   @include test("convert-font-size-to-rhythm-unit") {
-    @include assert-equal(convert-font-size-to-rhythm-unit(10px, $_globals), 10px);
-    @include assert-equal(convert-font-size-to-rhythm-unit(1rem, $_globals), 16px);
+    @include assert-equal(convert-font-size-to-rhythm-unit(10px, $config), 10px);
+    @include assert-equal(convert-font-size-to-rhythm-unit(1rem, $config), 16px);
 
-    $_globals-1: map.merge(
-      $_globals,
+    $config-1: map.merge(
+      $config,
       (
-        global-rhythm-size: 0.5rem
+        rhythm-size: 0.5rem
       )
     );
 
-    @include assert-equal(convert-font-size-to-rhythm-unit(16px, $_globals-1), 1rem);
+    @include assert-equal(convert-font-size-to-rhythm-unit(16px, $config-1), 1rem);
 
-    $_globals-2: map.merge(
-      $_globals,
+    $config-2: map.merge(
+      $config,
       (
-        global-rhythm-size: 10pt
+        rhythm-size: 10pt
       )
     );
 
-    @include assert-equal(convert-font-size-to-rhythm-unit(16pt, $_globals-2), 16pt);
+    @include assert-equal(convert-font-size-to-rhythm-unit(16pt, $config-2), 16pt);
   }
 
   @include test("calc-baseline-height") {
-    @include assert-equal(calc-baseline-height($font-map-1, "top", $_globals), 29px);
-    @include assert-equal(calc-baseline-height($font-map-1, "bottom", $_globals), 11px);
+    @include assert-equal(calc-baseline-height($font-map-1, "top", $config), 29px);
+    @include assert-equal(calc-baseline-height($font-map-1, "bottom", $config), 11px);
   }
 
   @include test("calc-height-with-offset") {

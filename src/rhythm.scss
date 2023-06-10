@@ -1,34 +1,31 @@
+@use "lib";
 @use "sass:map";
 @use "sass:math";
 @use "sass:meta";
-@use "lib";
 
 // ------------------ //
 //  Global Variables  //
 // ------------------ //
 
-$default-baseline: 0 !default;
-
-@if not core.is-valid-baseline($default-baseline) {
-  @error "Invalid $default-baseline ratio: '#{$default-baseline}', it should be a decimal number between 0 and 1.";
+$baseline-ratio: null !default;
+@if not lib.is-valid-baseline-ratio($baseline-ratio) {
+  @error "Invalid $baseline-ratio: `#{meta.inspect($baseline-ratio)}`. It should be a decimal between 0 and 1, exclusive.";
 }
 
-$global-rhythm-size: 8px !default;
-
-@if meta.type-of($global-rhythm-size) != number or not core.has-valid-unit($global-rhythm-size) {
-  @error "Invaild $global-rhythm-size value: '#{$global-rhythm-size}', it should be in absolute length unit or the rem unit.";
+$rhythm-size: 8px !default;
+@if meta.type-of($rhythm-size) != number or not lib.has-valid-unit($rhythm-size) {
+  @error "Invaild $rhythm-size: `#{meta.inspect($rhythm-size)}`. It should be a number in absolute length unit or the rem unit.";
 }
 
-$global-rem-size: 16px !default;
-
-@if meta.type-of($global-rem-size) != number or not core.has-valid-unit($global-rem-size) {
-  @error "Invaild $global-rem-size value: '#{$global-rem-size}', it should be in absolute length unit or the rem unit.";
+$rem-size: 16px !default;
+@if meta.type-of($rem-size) != number or not lib.has-valid-unit($rem-size) {
+  @error "Invaild $rem-size: `#{meta.inspect($rem-size)}`. It should be a number in an absolute length unit or the rem unit.";
 }
 
-$_globals: (
-  default-baseline: $default-baseline,
-  global-rhythm-size: $global-rhythm-size,
-  global-rem-size: $global-rem-size
+$__config: (
+  baseline-ratio: $baseline-ratio,
+  rhythm-size: $rhythm-size,
+  rem-size: $rem-size
 );
 
 // ------------------ //
@@ -36,29 +33,29 @@ $_globals: (
 // ------------------ //
 
 @function rhythm($rhythms, $offset: 0) {
-  $_rhythms: core.validate-rhythms($rhythms);
-  $_height: $global-rhythm-size * $_rhythms;
-  $_offset: core.validate-offset($offset);
+  $_rhythms: lib.validate-rhythms($rhythms);
+  $_height: $rhythm-size * $_rhythms;
+  $_offset: lib.validate-offset($offset);
 
-  @return core.calc-height-with-offset($_height, $_offset);
+  @return lib.calc-height-with-offset($_height, $_offset);
 }
 
 @function rhythm-top($font-map, $rhythms, $offset: 0) {
-  $_font-map: core.validate-font-map($font-map);
-  $_rhythms: core.validate-rhythms($rhythms);
-  $_height: $global-rhythm-size * $_rhythms - core.calc-baseline-height($_font-map, "bottom", $_globals);
-  $_offset: core.validate-offset($offset);
+  $_font-map: lib.validate-font-map($font-map);
+  $_rhythms: lib.validate-rhythms($rhythms);
+  $_height: $rhythm-size * $_rhythms - lib.calc-baseline-height($_font-map, "bottom", $__config);
+  $_offset: lib.validate-offset($offset);
 
-  @return core.calc-height-with-offset($_height, $_offset);
+  @return lib.calc-height-with-offset($_height, $_offset);
 }
 
 @function rhythm-bottom($font-map, $rhythms, $offset: 0) {
-  $_font-map: core.validate-font-map($font-map);
-  $_rhythms: core.validate-rhythms($rhythms);
-  $_height: $global-rhythm-size * $_rhythms - core.calc-baseline-height($_font-map, "top", $_globals);
-  $_offset: core.validate-offset($offset);
+  $_font-map: lib.validate-font-map($font-map);
+  $_rhythms: lib.validate-rhythms($rhythms);
+  $_height: $rhythm-size * $_rhythms - lib.calc-baseline-height($_font-map, "top", $__config);
+  $_offset: lib.validate-offset($offset);
 
-  @return core.calc-height-with-offset($_height, $_offset);
+  @return lib.calc-height-with-offset($_height, $_offset);
 }
 
 @function baseline-top($font-map, $rhythms, $offset: 0) {
@@ -69,14 +66,14 @@ $_globals: (
   @return rhythm-top($font-map, $rhythms, $offset);
 }
 
-@function baseline-between($above-font-map, $below-font-map, $rhythms, $offset: 0) {
-  $_above-font-map: core.validate-font-map($above-font-map);
-  $_below-font-map: core.validate-font-map($below-font-map);
-  $_rhythms: core.validate-rhythms($rhythms);
-  $_height: baseline-bottom($_above-font-map, $_rhythms) - core.calc-baseline-height($_below-font-map, "top", $_globals);
-  $_offset: core.validate-offset($offset);
+@function baseline-between($font-map-above, $font-map-below, $rhythms, $offset: 0) {
+  $_font-map-above: lib.validate-font-map($font-map-above);
+  $_font-map-below: lib.validate-font-map($font-map-below);
+  $_rhythms: lib.validate-rhythms($rhythms);
+  $_height: baseline-bottom($_font-map-above, $_rhythms) - lib.calc-baseline-height($_font-map-below, "top", $__config);
+  $_offset: lib.validate-offset($offset);
 
-  @return core.calc-height-with-offset($_height, $_offset);
+  @return lib.calc-height-with-offset($_height, $_offset);
 }
 
 // -------- //
@@ -84,12 +81,12 @@ $_globals: (
 // -------- //
 
 @mixin font($font-map, $properties-map: ()) {
-  $_font-map: core.validate-font-map($font-map);
+  $_font-map: lib.validate-font-map($font-map);
 
   font-size: map.get($_font-map, font-size);
-  line-height: $global-rhythm-size * map.get($_font-map, line-height);
+  line-height: $rhythm-size * map.get($_font-map, line-height);
 
-  @each $_property in map.keys(map.remove($_font-map, font-size, line-height, baseline)) {
+  @each $_property in map.keys(map.remove($_font-map, font-size, line-height, baseline-ratio)) {
     #{$_property}: map.get($_font-map, $_property);
   }
 
@@ -98,27 +95,27 @@ $_globals: (
 
   @each $_property, $_value in $properties-map {
     @if $_property == margin-top or $_property == padding-top {
-      $_used-top-property: core.validate-unused-property($_used-top-property, $_property);
+      $_used-top-property: lib.validate-unused-property($_used-top-property, $_property);
 
-      @if meta.type-of(core.first($_value)) == map {
-        $_params: core.rest($_value);
+      @if meta.type-of(lib.first($_value)) == map {
+        $_params: lib.rest($_value);
 
-        #{$_property}: baseline-between(core.first($_value), $_font-map, $_params...);
+        #{$_property}: baseline-between(lib.first($_value), $_font-map, $_params...);
       } @else {
         #{$_property}: baseline-top($_font-map, $_value...);
       }
     } @else if $_property == margin-bottom or $_property == padding-bottom {
-      $_used-bottom-property: core.validate-unused-property($_used-bottom-property, $_property);
+      $_used-bottom-property: lib.validate-unused-property($_used-bottom-property, $_property);
 
-      @if meta.type-of(core.first($_value)) == map {
-        $_params: core.rest($_value);
+      @if meta.type-of(lib.first($_value)) == map {
+        $_params: lib.rest($_value);
 
-        #{$_property}: baseline-between($_font-map, core.first($_value), $_params...);
+        #{$_property}: baseline-between($_font-map, lib.first($_value), $_params...);
       } @else {
         #{$_property}: baseline-bottom($_font-map, $_value...);
       }
     } @else {
-      @error "Unsupported property '#{$_property}' in $properties-map.";
+      @error "Unsupported property `#{meta.inspect($_property)}` in #{meta.inspect($properties-map)}.";
     }
   }
 }

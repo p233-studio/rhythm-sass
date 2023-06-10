@@ -1,5 +1,6 @@
 @use "../../src/rhythm" as * with (
-  $default-baseline: 0.112061 // for Noto serif font family
+  // Noto serif font family
+  $baseline-ratio: 0.112061
 );
 
 $gutter-width: 16px;
@@ -39,12 +40,8 @@ $card-button-font: (
 body {
   margin: 0;
   font: 16px/1 "Noto Serif", serif;
-  background-image: linear-gradient(
-    to bottom,
-    rgba(255, 0, 0, 0.1) $global-rhythm-size,
-    transparent $global-rhythm-size
-  );
-  background-size: 100% $global-rhythm-size * 2;
+  background-image: linear-gradient(to bottom, rgba(255, 0, 0, 0.1) $rhythm-size, transparent $rhythm-size);
+  background-size: 100% $rhythm-size * 2;
 }
 
 h1,

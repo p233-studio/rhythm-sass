@@ -1,14 +1,14 @@
-@use "sass:map";
 @use "sass:list";
+@use "sass:map";
 @use "sass:math";
 @use "sass:meta";
 @use "sass:string";
 
-// ---------------------- //
-//  Validation Functions  //
-// ---------------------- //
+// -------------------- //
+//  Validation Helpers  //
+// -------------------- //
 
-@function is-valid-baseline($value) {
+@function is-valid-baseline-ratio($value) {
   @return meta.type-of($value) == number and math.is-unitless($value) and $value > 0 and $value < 1;
 }
 
@@ -20,33 +20,32 @@
   @return list.index((cm mm q in pc pt px rem), string.to-lower-case(math.unit($value))) != null;
 }
 
+// ---------------------- //
+//  Validation Functions  //
+// ---------------------- //
+
 @function validate-font-map($value) {
   @if meta.type-of($value) != "map" {
-    @error "Invalid $font-map value: '#{$value}', it should be a map at least with keys of 'font-size' and 'line-height'.";
+    @error "Invalid $font-map: `#{meta.inspect($value)}`. It should be a map and must contain keys for `font-size` and `line-height`.";
   }
 
   $_font-size: map.get($value, font-size);
-
   @if not $_font-size {
-    @error "Missing the 'font-size' key in $font-map.";
-  } @else if meta.type-of($_font-size) != number {
-    @error "Invalid 'font-size' value in $font-map: '#{$_font-size}', it should be a number.";
-  } @else if not has-valid-unit($_font-size) {
-    @error "Invalid 'font-size' value in $font-map: '#{$_font-size}', it should be in absolute length unit or the rem unit.";
+    @error "The `font-size` key is missing in $font-map: `#{meta.inspect($value)}`.";
+  } @else if meta.type-of($_font-size) != number or not has-valid-unit($_font-size) {
+    @error "Invalid `font-size` value in $font-map: `#{meta.inspect($value)}`. It should be a number in an absolute length unit or the rem unit.";
   }
 
   $_line-height: map.get($value, line-height);
-
   @if not $_line-height {
-    @error "Missing the 'line-height' key in $font-map.";
+    @error "The `line-height` key is missing in $font-map: `#{meta.inspect($value)}`.";
   } @else if not is-valid-rhythms($_line-height) {
-    @error "Invalid 'line-height' value in $font-map: '#{$_line-height}'. The 'line-height' key represents the numbers of rhythm, it should be a unitless integer.";
+    @error "Invalid `line-height` value in $font-map: `#{meta.inspect($value)}`. The `line-height` key represents the numbers of rhythm, it should be a unitless integer.";
   }
 
-  $_baseline: map.get($value, baseline);
-
-  @if $_baseline and not is-valid-baseline($_baseline) {
-    @error "Invalid 'baseline' value in $font-map: '#{$_baseline}', it should be a decimal number between 0 and 1.";
+  $_baseline-ratio: map.get($value, baseline-ratio);
+  @if $_baseline-ratio and not is-valid-baseline-ratio($_baseline-ratio) {
+    @error "Invalid `baseline-ratio` value in $font-map: `#{meta.inspect($value)}`. It should be a decimal between 0 and 1, exclusive.";
   }
 
   @return $value;
@@ -57,7 +56,7 @@
     @return $value;
   }
 
-  @error "Invalid $rhythms value: '#{$value}', it should be a unitless integer.";
+  @error "Invalid $rhythms: `#{meta.inspect($value)}`. It should be a unitless integer.";
 }
 
 @function validate-offset($value) {
@@ -65,7 +64,7 @@
     @return $value;
   }
 
-  @error "Invalid $offset value: '#{$value}', it should be a number.";
+  @error "Invalid $offset: `#{meta.inspect($value)}`. It should be a number.";
 }
 
 @function validate-unused-property($used-property, $property) {
@@ -73,48 +72,47 @@
     @return $property;
   }
 
-  @error "Can not calculate rhythms for both '#{$used-property}' and '#{$property}' at the same time.";
+  @error "Can not calculate rhythms for both `#{meta.inspect($used-property)}` and `#{meta.inspect($property)}` at the same time.";
 }
 
 // ----------------------- //
 //  Calculation Functions  //
 // ----------------------- //
 
-@function convert-font-size-to-rhythm-unit($value, $globals) {
+@function convert-font-size-to-rhythm-unit($value, $config) {
   $_font-size-unit: math.unit($value);
-  $_global-rem-size: map.get($globals, global-rem-size);
-  $_global-rhythm-size: map.get($globals, global-rhythm-size);
-  $_rhythm-unit: math.unit($_global-rhythm-size);
+  $_rem-size: map.get($config, rem-size);
+  $_rhythm-size: map.get($config, rhythm-size);
+  $_rhythm-unit: math.unit($_rhythm-size);
 
   @if $_font-size-unit == $_rhythm-unit {
     @return $value;
   } @else if $_font-size-unit == rem and $_rhythm-unit == px {
-    @return math.div($value, 1rem) * $_global-rem-size;
+    @return math.div($value, 1rem) * $_rem-size;
   } @else if $_font-size-unit == px and $_rhythm-unit == rem {
-    @return math.div($value, $_global-rem-size) * 1rem;
+    @return math.div($value, $_rem-size) * 1rem;
   } @else {
-    @error "Rhythm-scss currently can only convert the 'font-size' unit from 'px' to 'rem', or vice versa, when the 'font-size' and $global-rhythm-size are in different units. Otherwise, please make sure they are in the same unit, for example, both of them are in the 'pt' unit.";
+    @error "It is ideal for both `font-size` and `$rhythm-size` to use the same unit, either an absolute length unit or the rem unit. However, if they are in different units, rhythm-scss can only convert the `font-size` unit between `px` and `rem`.";
   }
 }
 
-@function calc-baseline-height($font-map, $direction, $globals) {
-  $_font-size: map.get($font-map, font-size);
-  $_font-size: convert-font-size-to-rhythm-unit($_font-size, $globals);
+@function calc-baseline-height($font-map, $direction, $config) {
+  $_font-size: convert-font-size-to-rhythm-unit(map.get($font-map, font-size), $config);
   $_rhythms: map.get($font-map, line-height);
-  $_baseline: map.get($font-map, baseline) or map.get($globals, default-baseline);
-  $_global-rhythm-size: map.get($globals, global-rhythm-size);
-  $_half-space: math.div($_global-rhythm-size * $_rhythms - $_font-size, 2);
+  $_baseline-ratio: map.get($font-map, baseline-ratio) or map.get($config, baseline-ratio);
+  $_rhythm-size: map.get($config, rhythm-size);
+  $_half-space: math.div($_rhythm-size * $_rhythms - $_font-size, 2);
   $_height: 0 !default;
 
   @if $direction == "top" {
-    $_height: $_half-space + $_font-size * (1 - $_baseline);
+    $_height: $_half-space + $_font-size * (1 - $_baseline-ratio);
   } @else if $direction == "bottom" {
-    $_height: $_half-space + $_font-size * $_baseline;
+    $_height: $_half-space + $_font-size * $_baseline-ratio;
   } @else {
-    @error "The $direction parameter should only has value of 'top' or 'bottom'.";
+    @error "The $direction parameter should only have a value of `top` or `bottom`.";
   }
 
-  @return if(math.unit($_global-rhythm-size) == "rem", $_height, math.round($_height));
+  @return if(math.unit($_rhythm-size) == "rem", $_height, math.round($_height));
 }
 
 @function calc-height-with-offset($height, $offset) {
