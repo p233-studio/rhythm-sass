@@ -9,17 +9,17 @@
 
 $baseline-ratio: null !default;
 @if not lib.is-valid-baseline-ratio($baseline-ratio) {
-  @error "Invalid $baseline-ratio: `#{meta.inspect($baseline-ratio)}`. It should be a decimal between 0 and 1, exclusive.";
+  @error "Invalid $baseline-ratio: #{meta.inspect($baseline-ratio)}. The value must be a decimal greater than 0 and less than 1.";
 }
 
 $rhythm-size: 8px !default;
 @if meta.type-of($rhythm-size) != number or not lib.has-valid-unit($rhythm-size) {
-  @error "Invaild $rhythm-size: `#{meta.inspect($rhythm-size)}`. It should be a number in absolute length unit or the rem unit.";
+  @error "Invaild $rhythm-size: #{meta.inspect($rhythm-size)}. The value should be a number in an absolute length unit or the REM unit.";
 }
 
 $rem-size: 16px !default;
 @if meta.type-of($rem-size) != number or not lib.has-valid-unit($rem-size) {
-  @error "Invaild $rem-size: `#{meta.inspect($rem-size)}`. It should be a number in an absolute length unit or the rem unit.";
+  @error "Invaild $rem-size: #{meta.inspect($rem-size)}. The value should be a number in an absolute length unit or the REM unit.";
 }
 
 $__config: (
@@ -106,7 +106,7 @@ $__config: (
         $_result: baseline-bottom($_font-map, $_value...);
       }
     } @else {
-      @error "Unsupported property `#{meta.inspect($_property)}` in #{meta.inspect($properties-map)}.";
+      @error "Unsupported property #{meta.inspect($_property)} in #{meta.inspect($properties-map)}.";
     }
 
     @if ($_property == padding-top or $_property == padding-bottom) and $_result < 0 {
