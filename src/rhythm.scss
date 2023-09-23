@@ -91,25 +91,29 @@ $__config: (
   }
 
   @each $_property, $_value in $properties-map {
+    $_result: null;
+
     @if $_property == margin-top or $_property == padding-top {
       @if meta.type-of(lib.first($_value)) == map {
-        $_params: lib.rest($_value);
-
-        #{$_property}: baseline-between(lib.first($_value), $_font-map, $_params...);
+        $_result: baseline-between(lib.first($_value), $_font-map, lib.rest($_value)...);
       } @else {
-        #{$_property}: baseline-top($_font-map, $_value...);
+        $_result: baseline-top($_font-map, $_value...);
       }
     } @else if $_property == margin-bottom or $_property == padding-bottom {
       @if meta.type-of(lib.first($_value)) == map {
-        $_params: lib.rest($_value);
-
-        #{$_property}: baseline-between($_font-map, lib.first($_value), $_params...);
+        $_result: baseline-between($_font-map, lib.first($_value), lib.rest($_value)...);
       } @else {
-        #{$_property}: baseline-bottom($_font-map, $_value...);
+        $_result: baseline-bottom($_font-map, $_value...);
       }
     } @else {
       @error "Unsupported property `#{meta.inspect($_property)}` in #{meta.inspect($properties-map)}.";
     }
+
+    @if ($_property == padding-top or $_property == padding-bottom) and $_result < 0 {
+      @error "The calculated #{$_property} value is #{$_result}, which is negative. Please update your rhythm counts to ensure a positive value.";
+    }
+
+    #{$_property}: $_result;
   }
 }
 
