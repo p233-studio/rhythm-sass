@@ -5,7 +5,7 @@
   "main": "./src/rhythm.scss",
   "scripts": {
     "test": "jest",
-    "build-examples": "./node_modules/.bin/sass ./examples/px-unit/styles.scss:./examples/px-unit/styles.css ./examples/rem-unit/styles.scss:./examples/rem-unit/styles.css --no-source-map",
+    "build-examples": "./node_modules/.bin/sass ./examples/test/styles.scss:./examples/test/styles.css ./examples/rem-unit/styles.scss:./examples/rem-unit/styles.css --no-source-map",
     "pre-commit": "lint-staged && npm run test"
   },
   "repository": {
@@ -27,13 +27,13 @@
   "devDependencies": {
     "@p233/stylelint-config-scss": "^4.0.0",
     "husky": "^8.0.3",
-    "jest": "^29.5.0",
+    "jest": "^29.7.0",
     "jest-environment-node-single-context": "^29.1.0",
-    "lint-staged": "^13.2.2",
-    "prettier": "^2.8.8",
-    "sass": "^1.63.3",
+    "lint-staged": "^14.0.1",
+    "prettier": "^3.0.3",
+    "sass": "^1.68.0",
     "sass-true": "^7.0.0",
-    "stylelint": "^15.7.0"
+    "stylelint": "^15.10.3"
   },
   "jest": {
     "testEnvironment": "jest-environment-node-single-context"
@@ -45,6 +45,6 @@
     ]
   },
   "dependencies": {
-    "lambda-sass": "^2.0.0-alpha.1"
+    "lambda-sass": "^2.0.1"
   }
 }
