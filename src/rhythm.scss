@@ -117,7 +117,7 @@ $__config: (
   }
 }
 
-@mixin draw-rhythms() {
+@mixin draw-rhythms($color: rgb(255 120 120 / 25%)) {
   :root {
     position: relative;
 
@@ -127,7 +127,7 @@ $__config: (
       z-index: 1000000;
       inset: 0;
       pointer-events: none;
-      background-image: linear-gradient(to bottom, rgb(255 120 120 / 25%) $rhythm-size, transparent $rhythm-size);
+      background-image: linear-gradient(to bottom, $color $rhythm-size, transparent $rhythm-size);
       background-size: 100% ($rhythm-size * 2);
     }
   }
