@@ -90,13 +90,8 @@ $__config: (
     #{$_property}: map.get($_font-map, $_property);
   }
 
-  $_used-top-property: null;
-  $_used-bottom-property: null;
-
   @each $_property, $_value in $properties-map {
     @if $_property == margin-top or $_property == padding-top {
-      $_used-top-property: lib.validate-unused-property($_used-top-property, $_property);
-
       @if meta.type-of(lib.first($_value)) == map {
         $_params: lib.rest($_value);
 
@@ -105,8 +100,6 @@ $__config: (
         #{$_property}: baseline-top($_font-map, $_value...);
       }
     } @else if $_property == margin-bottom or $_property == padding-bottom {
-      $_used-bottom-property: lib.validate-unused-property($_used-bottom-property, $_property);
-
       @if meta.type-of(lib.first($_value)) == map {
         $_params: lib.rest($_value);
 

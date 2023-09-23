@@ -67,14 +67,6 @@
   @error "Invalid $offset: `#{meta.inspect($value)}`. It should be a number.";
 }
 
-@function validate-unused-property($used-property, $property) {
-  @if not $used-property or $used-property == $property {
-    @return $property;
-  }
-
-  @error "Can not calculate rhythms for both `#{meta.inspect($used-property)}` and `#{meta.inspect($property)}` at the same time.";
-}
-
 // ----------------------- //
 //  Calculation Functions  //
 // ----------------------- //
