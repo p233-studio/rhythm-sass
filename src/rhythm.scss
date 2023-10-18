@@ -80,7 +80,7 @@ $__config: (
 //  Mixins  //
 // -------- //
 
-@mixin font($font-map, $properties-map: ()) {
+@mixin font($font-map, $spacing-map: ()) {
   $_font-map: lib.validate-font-map($font-map);
 
   font-size: map.get($_font-map, font-size);
@@ -90,7 +90,7 @@ $__config: (
     #{$_property}: map.get($_font-map, $_property);
   }
 
-  @each $_property, $_value in $properties-map {
+  @each $_property, $_value in $spacing-map {
     $_result: null;
 
     @if $_property == margin-top or $_property == padding-top {
@@ -106,7 +106,7 @@ $__config: (
         $_result: baseline-bottom($_font-map, $_value...);
       }
     } @else {
-      @error "Unsupported property #{meta.inspect($_property)} in #{meta.inspect($properties-map)}.";
+      @error "Unsupported property #{meta.inspect($_property)} in #{meta.inspect($spacing-map)}.";
     }
 
     @if ($_property == padding-top or $_property == padding-bottom) and $_result < 0 {
