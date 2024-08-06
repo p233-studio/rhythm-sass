@@ -9,17 +9,17 @@
 
 $baseline-ratio: null !default;
 @if not lib.is-valid-baseline-ratio($baseline-ratio) {
-  @error "Invalid $baseline-ratio: #{meta.inspect($baseline-ratio)}. The value must be a decimal greater than 0 and less than 1.";
+  @error "Invalid $baseline-ratio: #{meta.inspect($baseline-ratio)}. The value must be a decimal between 0 and 1 (exclusive).";
 }
 
 $rhythm-size: 8px !default;
 @if meta.type-of($rhythm-size) != number or not lib.has-valid-unit($rhythm-size) {
-  @error "Invaild $rhythm-size: #{meta.inspect($rhythm-size)}. The value should be a number in an absolute length unit or the REM unit.";
+  @error "Invalid $rhythm-size: #{meta.inspect($rhythm-size)}. The value must be a number in an absolute length unit or the rem unit.";
 }
 
 $rem-size: 16px !default;
 @if meta.type-of($rem-size) != number or not lib.has-valid-unit($rem-size) {
-  @error "Invaild $rem-size: #{meta.inspect($rem-size)}. The value should be a number in an absolute length unit or the REM unit.";
+  @error "Invalid $rem-size: #{meta.inspect($rem-size)}. The value must be a number in an absolute length unit or the rem unit.";
 }
 
 $__config: (
@@ -33,47 +33,51 @@ $__config: (
 // ------------------ //
 
 @function rhythm($rhythms, $offset: 0) {
-  $_rhythms: lib.validate-rhythms($rhythms);
+  $_rhythms: lib.ensure-valid-rhythms($rhythms);
   $_height: $rhythm-size * $_rhythms;
-  $_offset: lib.validate-offset($offset);
-
-  @return lib.calc-height-with-offset($_height, $_offset);
-}
-
-@function rhythm-top($font-map, $rhythms, $offset: 0) {
-  $_font-map: lib.validate-font-map($font-map);
-  $_rhythms: lib.validate-rhythms($rhythms);
-  $_height: $rhythm-size * $_rhythms - lib.calc-baseline-height($_font-map, "bottom", $__config);
-  $_offset: lib.validate-offset($offset);
-
-  @return lib.calc-height-with-offset($_height, $_offset);
-}
-
-@function rhythm-bottom($font-map, $rhythms, $offset: 0) {
-  $_font-map: lib.validate-font-map($font-map);
-  $_rhythms: lib.validate-rhythms($rhythms);
-  $_height: $rhythm-size * $_rhythms - lib.calc-baseline-height($_font-map, "top", $__config);
-  $_offset: lib.validate-offset($offset);
+  $_offset: lib.ensure-valid-offset($offset);
 
   @return lib.calc-height-with-offset($_height, $_offset);
 }
 
 @function baseline-top($font-map, $rhythms, $offset: 0) {
-  @return rhythm-bottom($font-map, $rhythms, $offset);
+  $_font-map: lib.ensure-valid-font-map($font-map);
+  $_rhythms: lib.ensure-valid-rhythms($rhythms);
+  $_height: $rhythm-size * $_rhythms - lib.calc-baseline-height($_font-map, "upper", $__config);
+  $_offset: lib.ensure-valid-offset($offset);
+
+  @return lib.calc-height-with-offset($_height, $_offset);
 }
 
 @function baseline-bottom($font-map, $rhythms, $offset: 0) {
-  @return rhythm-top($font-map, $rhythms, $offset);
+  $_font-map: lib.ensure-valid-font-map($font-map);
+  $_rhythms: lib.ensure-valid-rhythms($rhythms);
+  $_height: $rhythm-size * $_rhythms - lib.calc-baseline-height($_font-map, "lower", $__config);
+  $_offset: lib.ensure-valid-offset($offset);
+
+  @return lib.calc-height-with-offset($_height, $_offset);
 }
 
 @function baseline-between($font-map-above, $font-map-below, $rhythms, $offset: 0) {
-  $_font-map-above: lib.validate-font-map($font-map-above);
-  $_font-map-below: lib.validate-font-map($font-map-below);
-  $_rhythms: lib.validate-rhythms($rhythms);
-  $_height: baseline-bottom($_font-map-above, $_rhythms) - lib.calc-baseline-height($_font-map-below, "top", $__config);
-  $_offset: lib.validate-offset($offset);
+  $_font-map-above: lib.ensure-valid-font-map($font-map-above);
+  $_font-map-below: lib.ensure-valid-font-map($font-map-below);
+  $_rhythms: lib.ensure-valid-rhythms($rhythms);
+  $_height: baseline-bottom($_font-map-above, $_rhythms) - lib.calc-baseline-height(
+      $_font-map-below,
+      "upper",
+      $__config
+    );
+  $_offset: lib.ensure-valid-offset($offset);
 
   @return lib.calc-height-with-offset($_height, $_offset);
+}
+
+@function rhythm-top($font-map, $rhythms, $offset: 0) {
+  @return baseline-bottom($font-map, $rhythms, $offset);
+}
+
+@function rhythm-bottom($font-map, $rhythms, $offset: 0) {
+  @return baseline-top($font-map, $rhythms, $offset);
 }
 
 // -------- //
@@ -81,7 +85,7 @@ $__config: (
 // -------- //
 
 @mixin font($font-map, $spacing-map: ()) {
-  $_font-map: lib.validate-font-map($font-map);
+  $_font-map: lib.ensure-valid-font-map($font-map);
 
   font-size: map.get($_font-map, font-size);
   line-height: $rhythm-size * map.get($_font-map, line-height);
@@ -93,14 +97,14 @@ $__config: (
   @each $_property, $_value in $spacing-map {
     $_result: null;
 
-    @if $_property == margin-top or $_property == padding-top {
-      @if meta.type-of(lib.first($_value)) == map {
+    @if $_property == "margin-top" or $_property == "padding-top" {
+      @if meta.type-of(lib.first($_value)) == "map" {
         $_result: baseline-between(lib.first($_value), $_font-map, lib.rest($_value)...);
       } @else {
         $_result: baseline-top($_font-map, $_value...);
       }
-    } @else if $_property == margin-bottom or $_property == padding-bottom {
-      @if meta.type-of(lib.first($_value)) == map {
+    } @else if $_property == "margin-bottom" or $_property == "padding-bottom" {
+      @if meta.type-of(lib.first($_value)) == "map" {
         $_result: baseline-between($_font-map, lib.first($_value), lib.rest($_value)...);
       } @else {
         $_result: baseline-bottom($_font-map, $_value...);
@@ -109,8 +113,8 @@ $__config: (
       @error "Unsupported property #{meta.inspect($_property)} in #{meta.inspect($spacing-map)}.";
     }
 
-    @if ($_property == padding-top or $_property == padding-bottom) and $_result < 0 {
-      @error "The calculated #{$_property} value is #{$_result}, which is negative. Please update your rhythm counts to ensure a positive value.";
+    @if ($_property == "padding-top" or $_property == "padding-bottom") and $_result < 0 {
+      @error "The calculated #{$_property} value (#{$_result}) is negative. Please update your rhythm counts to ensure a non-negative value.";
     }
 
     #{$_property}: $_result;

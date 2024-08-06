@@ -4,67 +4,67 @@
 @use "sass:meta";
 @use "sass:string";
 
-// -------------------- //
-//  Validation Helpers  //
-// -------------------- //
-
-@function is-valid-baseline-ratio($value) {
-  @return meta.type-of($value) == number and math.is-unitless($value) and $value > 0 and $value < 1;
-}
-
-@function is-valid-rhythms($value) {
-  @return meta.type-of($value) == number and math.is-unitless($value) and $value % 1 == 0;
-}
-
-@function has-valid-unit($value) {
-  @return list.index((cm mm q in pc pt px rem), string.to-lower-case(math.unit($value))) != null;
-}
-
 // ---------------------- //
 //  Validation Functions  //
 // ---------------------- //
 
-@function validate-font-map($value) {
+@function is-valid-baseline-ratio($value) {
+  @return meta.type-of($value) == "number" and math.is-unitless($value) and $value > 0 and $value < 1;
+}
+
+@function is-valid-rhythms($value) {
+  @return meta.type-of($value) == "number" and math.is-unitless($value) and $value % 1 == 0;
+}
+
+@function has-valid-unit($value) {
+  @return list.index(("cm" "mm" "q" "in" "pc" "pt" "px" "rem"), string.to-lower-case(math.unit($value))) != null;
+}
+
+// ------------------ //
+//  Ensure Functions  //
+// ------------------ //
+
+@function ensure-valid-font-map($value) {
   @if meta.type-of($value) != "map" {
-    @error "Invalid $font-map: #{meta.inspect($value)}. The value must be a map with required keys for font-size and line-height.";
+    @error "Invalid $font-map: #{meta.inspect($value)}. The value must be a map containing required keys for font-size and line-height.";
   }
 
   $_font-size: map.get($value, font-size);
   @if not $_font-size {
     @error "The font-size key is missing in $font-map: #{meta.inspect($value)}.";
   } @else if meta.type-of($_font-size) != number or not has-valid-unit($_font-size) {
-    @error "Invalid font-size value in $font-map: #{meta.inspect($value)}. The value should be a number in an absolute length unit or the REM unit.";
+    @error "Invalid font-size value in $font-map: #{meta.inspect($value)}. The value should be a number in an absolute length unit or the rem unit.";
   }
 
   $_line-height: map.get($value, line-height);
   @if not $_line-height {
-    @error "The line-height key is missing in $font-map: #{meta.inspect($value)}.";
+    @error "The line-height key is missing in the $font-map: #{meta.inspect($value)}.";
   } @else if not is-valid-rhythms($_line-height) {
-    @error "Invalid line-height value in $font-map: #{meta.inspect($value)}. The line-height key represents the number of rhythm, and it must be a unitless whole number.";
+    @error "Invalid line-height value in $font-map: #{meta.inspect($value)}. The line-height key represents the number of rhythms and must be a unitless integer.";
   }
 
   $_baseline-ratio: map.get($value, baseline-ratio);
   @if $_baseline-ratio and not is-valid-baseline-ratio($_baseline-ratio) {
-    @error "Invalid baseline-ratio value in $font-map: #{meta.inspect($value)}. The value must be a decimal greater than 0 and less than 1.";
+    @error "Invalid baseline-ratio value in $font-map: #{meta.inspect($value)}. The value must be a decimal between 0 and 1 (exclusive).";
   }
 
   @return $value;
 }
 
-@function validate-rhythms($value) {
-  @if is-valid-rhythms($value) {
-    @return $value;
+@function ensure-valid-rhythms($value) {
+  @if not is-valid-rhythms($value) {
+    @error "Invalid $rhythms: #{meta.inspect($value)}. The value must be a unitless integer.";
   }
 
-  @error "Invalid $rhythms: #{meta.inspect($value)}. The value should be a unitless whole number.";
+  @return $value;
 }
 
-@function validate-offset($value) {
-  @if meta.type-of($value) == number {
-    @return $value;
+@function ensure-valid-offset($value) {
+  @if meta.type-of($value) != "number" {
+    @error "Invalid $offset: #{meta.inspect($value)}. The value must be a number.";
   }
 
-  @error "Invalid $offset: #{meta.inspect($value)}. The value must be a number.";
+  @return $value;
 }
 
 // ----------------------- //
@@ -79,31 +79,30 @@
 
   @if $_font-size-unit == $_rhythm-unit {
     @return $value;
-  } @else if $_font-size-unit == rem and $_rhythm-unit == px {
+  } @else if $_font-size-unit == "rem" and $_rhythm-unit == "px" {
     @return math.div($value, 1rem) * $_rem-size;
-  } @else if $_font-size-unit == px and $_rhythm-unit == rem {
+  } @else if $_font-size-unit == "px" and $_rhythm-unit == "rem" {
     @return math.div($value, $_rem-size) * 1rem;
   } @else {
-    @error "For the best results, both font-size and $rhythm-size should use the same unit, either an absolute length unit or the REM unit. However, if they utilize different units, rhythm-scss can only convert the font-size unit between px and rem.";
+    @error "For best results, both font-size and $rhythm-size should use the same unit, either an absolute length unit or the rem unit. However, if different units are used, rhythm-scss can only convert the font-size unit between px and rem.";
   }
 }
 
-@function calc-baseline-height($font-map, $direction, $config) {
+@function calc-baseline-height($font-map, $segment, $config) {
   $_font-size: convert-font-size-to-rhythm-unit(map.get($font-map, font-size), $config);
   $_rhythms: map.get($font-map, line-height);
-  $_baseline-ratio: map.get($font-map, baseline-ratio) or map.get($config, baseline-ratio);
   $_rhythm-size: map.get($config, rhythm-size);
   $_half-space: math.div($_rhythm-size * $_rhythms - $_font-size, 2);
+  $_baseline-ratio: map.get($font-map, baseline-ratio) or map.get($config, baseline-ratio);
   $_height: 0 !default;
 
-  @if $direction == "top" {
+  @if $segment == "upper" {
     $_height: $_half-space + $_font-size * (1 - $_baseline-ratio);
-  } @else if $direction == "bottom" {
+  } @else if $segment == "lower" {
     $_height: $_half-space + $_font-size * $_baseline-ratio;
   } @else {
-    @error "The $direction parameter must only be assigned a value of either top or bottom.";
+    @error "The $segment parameter must be assigned a value of either 'upper' or 'lower'.";
   }
-
   @return if(math.unit($_rhythm-size) == "rem", $_height, math.round($_height));
 }
 

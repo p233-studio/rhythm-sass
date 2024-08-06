@@ -31,21 +31,21 @@ $config: (
     @include assert-equal(has-valid-unit(1vh), false);
   }
 
-  @include test("validate-font-map") {
+  @include test("ensure-valid-font-map") {
     $_font-map: (
       font-size: 16px,
       line-height: 5
     );
 
-    @include assert-equal(validate-font-map($_font-map), $_font-map);
+    @include assert-equal(ensure-valid-font-map($_font-map), $_font-map);
   }
 
-  @include test("validate-rhythms") {
-    @include assert-equal(validate-rhythms(5), 5);
+  @include test("ensure-valid-rhythms") {
+    @include assert-equal(ensure-valid-rhythms(5), 5);
   }
 
-  @include test("validate-offset") {
-    @include assert-equal(validate-offset(0.112061), 0.112061);
+  @include test("ensure-valid-offset") {
+    @include assert-equal(ensure-valid-offset(0.112061), 0.112061);
   }
 }
 
@@ -74,8 +74,8 @@ $config: (
   }
 
   @include test("calc-baseline-height") {
-    @include assert-equal(calc-baseline-height($font-map-1, "top", $config), 29px);
-    @include assert-equal(calc-baseline-height($font-map-1, "bottom", $config), 11px);
+    @include assert-equal(calc-baseline-height($font-map-1, "upper", $config), 29px);
+    @include assert-equal(calc-baseline-height($font-map-1, "lower", $config), 11px);
   }
 
   @include test("calc-height-with-offset") {
