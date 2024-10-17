@@ -96,18 +96,26 @@ $__config: (
 
   @each $_property, $_value in $spacing-map {
     $_result: null;
+    $_function-name: lib.first($_value);
+    $_function-args: lib.rest($_value);
 
     @if $_property == "margin-top" or $_property == "padding-top" {
-      @if meta.type-of(lib.first($_value)) == "map" {
-        $_result: baseline-between(lib.first($_value), $_font-map, lib.rest($_value)...);
+      @if $_function-name == "rhythm" or $_function-name == "baseline-top" {
+        $_result: meta.call(meta.get-function($_function-name), $_font-map, $_function-args...);
+      } @else if $_function-name == "baseline-between" {
+        $__font-map-above: lib.first($_function-args);
+        $__function-args: lib.rest($_function-args);
+        $_result: meta.call(meta.get-function($_function-name), $__font-map-above, $_font-map, $__function-args...);
       } @else {
-        $_result: baseline-top($_font-map, $_value...);
+        @error "Unsupported function #{meta.inspect($_function-name)} in #{meta.inspect($_property)}.";
       }
     } @else if $_property == "margin-bottom" or $_property == "padding-bottom" {
-      @if meta.type-of(lib.first($_value)) == "map" {
-        $_result: baseline-between($_font-map, lib.first($_value), lib.rest($_value)...);
+      @if $_function-name == "rhythm" or $_function-name == "baseline-bottom" {
+        $_result: meta.call(meta.get-function($_function-name), $_font-map, $_function-args...);
+      } @else if $_function-name == "baseline-between" {
+        $_result: meta.call(meta.get-function($_function-name), $_font-map, $_function-args...);
       } @else {
-        $_result: baseline-bottom($_font-map, $_value...);
+        @error "Unsupported function #{meta.inspect($_function-name)} in #{meta.inspect($_property)}.";
       }
     } @else {
       @error "Unsupported property #{meta.inspect($_property)} in #{meta.inspect($spacing-map)}.";

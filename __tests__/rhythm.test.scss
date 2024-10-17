@@ -91,8 +91,8 @@
         @include font(
           $font-map-3,
           (
-            margin-top: 3,
-            margin-bottom: 3
+            margin-top: baseline-top 3,
+            margin-bottom: baseline-bottom 3
           )
         );
       }
@@ -110,8 +110,8 @@
         @include font(
           $font-map-3,
           (
-            margin-top: $font-map-5 3,
-            margin-bottom: $font-map-5 3
+            margin-top: baseline-between $font-map-5 3,
+            margin-bottom: baseline-between $font-map-5 3
           )
         );
       }

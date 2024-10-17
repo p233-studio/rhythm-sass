@@ -64,7 +64,7 @@ p {
   @include font(
     $heading-font,
     (
-      margin-bottom: $subheading-font 6
+      margin-bottom: baseline-between $subheading-font 6
     )
   );
 }
@@ -73,8 +73,8 @@ p {
   @include font(
     $heading-h2-font,
     (
-      margin-top: $paragraph-font 6,
-      margin-bottom: $paragraph-font 5 -1px
+      margin-top: baseline-between $paragraph-font 6,
+      margin-bottom: baseline-between $paragraph-font 5 -1px
     )
   );
 
@@ -86,7 +86,7 @@ p {
   @include font(
     $subheading-font,
     (
-      margin-bottom: $paragraph-font 6
+      margin-bottom: baseline-between $paragraph-font 6
     )
   );
 }
@@ -132,7 +132,7 @@ p {
     @include font(
       $card-heading-font,
       (
-        margin-bottom: $paragraph-font 4
+        margin-bottom: baseline-between $paragraph-font 4
       )
     );
   }
@@ -141,7 +141,7 @@ p {
     @include font(
       $paragraph-font,
       (
-        margin-bottom: 2
+        margin-bottom: baseline-bottom 2
       )
     );
   }
@@ -169,7 +169,7 @@ p {
     @include font(
       $card-button-font,
       (
-        padding-top: 3
+        padding-top: baseline-top 3
       )
     );
   }
