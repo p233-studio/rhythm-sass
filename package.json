@@ -1,7 +1,7 @@
 {
   "name": "rhythm-sass",
   "version": "1.0.0",
-  "description": "",
+  "description": "Provides reliable vertical rhythm for web typography.",
   "main": "./src/rhythm.scss",
   "scripts": {
     "test": "jest",
@@ -43,5 +43,8 @@
       "prettier --write",
       "stylelint"
     ]
-  }
+  },
+  "files": [
+    "src"
+  ]
 }
