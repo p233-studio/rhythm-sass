@@ -88,21 +88,25 @@
   }
 }
 
-@function calc-baseline-height($font-map, $segment, $config) {
+@function calc-baseline-above-height($font-map, $config) {
   $_font-size: convert-font-size-to-rhythm-unit(map.get($font-map, font-size), $config);
   $_rhythms: map.get($font-map, line-height);
   $_rhythm-size: map.get($config, rhythm-size);
-  $_half-space: math.div($_rhythm-size * $_rhythms - $_font-size, 2);
+  $_half-leading: math.div($_rhythm-size * $_rhythms - $_font-size, 2);
   $_baseline-ratio: map.get($font-map, baseline-ratio) or map.get($config, baseline-ratio);
-  $_height: 0 !default;
+  $_height: $_half-leading + $_font-size * (1 - $_baseline-ratio);
 
-  @if $segment == "upper" {
-    $_height: $_half-space + $_font-size * (1 - $_baseline-ratio);
-  } @else if $segment == "lower" {
-    $_height: $_half-space + $_font-size * $_baseline-ratio;
-  } @else {
-    @error "The $segment parameter must be assigned a value of either 'upper' or 'lower'.";
-  }
+  @return if(math.unit($_rhythm-size) == "rem", $_height, math.round($_height));
+}
+
+@function calc-baseline-below-depth($font-map, $config) {
+  $_font-size: convert-font-size-to-rhythm-unit(map.get($font-map, font-size), $config);
+  $_rhythms: map.get($font-map, line-height);
+  $_rhythm-size: map.get($config, rhythm-size);
+  $_half-leading: math.div($_rhythm-size * $_rhythms - $_font-size, 2);
+  $_baseline-ratio: map.get($font-map, baseline-ratio) or map.get($config, baseline-ratio);
+  $_height: $_half-leading + $_font-size * $_baseline-ratio;
+
   @return if(math.unit($_rhythm-size) == "rem", $_height, math.round($_height));
 }
 

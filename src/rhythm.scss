@@ -43,7 +43,7 @@ $__config: (
 @function baseline-top($font-map, $rhythms, $offset: 0) {
   $_font-map: lib.ensure-valid-font-map($font-map);
   $_rhythms: lib.ensure-valid-rhythms($rhythms);
-  $_height: $rhythm-size * $_rhythms - lib.calc-baseline-height($_font-map, "upper", $__config);
+  $_height: $rhythm-size * $_rhythms - lib.calc-baseline-above-height($_font-map, $__config);
   $_offset: lib.ensure-valid-offset($offset);
 
   @return lib.calc-height-with-offset($_height, $_offset);
@@ -52,7 +52,7 @@ $__config: (
 @function baseline-bottom($font-map, $rhythms, $offset: 0) {
   $_font-map: lib.ensure-valid-font-map($font-map);
   $_rhythms: lib.ensure-valid-rhythms($rhythms);
-  $_height: $rhythm-size * $_rhythms - lib.calc-baseline-height($_font-map, "lower", $__config);
+  $_height: $rhythm-size * $_rhythms - lib.calc-baseline-below-depth($_font-map, $__config);
   $_offset: lib.ensure-valid-offset($offset);
 
   @return lib.calc-height-with-offset($_height, $_offset);
@@ -62,11 +62,7 @@ $__config: (
   $_font-map-above: lib.ensure-valid-font-map($font-map-above);
   $_font-map-below: lib.ensure-valid-font-map($font-map-below);
   $_rhythms: lib.ensure-valid-rhythms($rhythms);
-  $_height: baseline-bottom($_font-map-above, $_rhythms) - lib.calc-baseline-height(
-      $_font-map-below,
-      "upper",
-      $__config
-    );
+  $_height: baseline-bottom($_font-map-above, $_rhythms) - lib.calc-baseline-above-height($_font-map-below, $__config);
   $_offset: lib.ensure-valid-offset($offset);
 
   @return lib.calc-height-with-offset($_height, $_offset);

@@ -73,9 +73,12 @@ $config: (
     @include assert-equal(convert-font-size-to-rhythm-unit(16pt, $config-2), 16pt);
   }
 
-  @include test("calc-baseline-height") {
-    @include assert-equal(calc-baseline-height($font-map-1, "upper", $config), 29px);
-    @include assert-equal(calc-baseline-height($font-map-1, "lower", $config), 11px);
+  @include test("calc-baseline-above-height") {
+    @include assert-equal(calc-baseline-above-height($font-map-1, $config), 29px);
+  }
+
+  @include test("calc-baseline-below-depth") {
+    @include assert-equal(calc-baseline-below-depth($font-map-1, $config), 11px);
   }
 
   @include test("calc-height-with-offset") {
