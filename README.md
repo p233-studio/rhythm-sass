@@ -1,6 +1,6 @@
 # rhythm-sass
 
-![rhythm-sass](./docs/logo.png)
+![rhythm-sass](https://cdn.jsdelivr.net/gh/p233/rhythm-sass/docs/logo.png)
 
 rhythm-sass is a Sass library for implementing vertical rhythm in web typography, inspired by and building upon concepts introduced by [Plumber](https://jamonserrano.github.io/plumber-sass/). It calculates precise font offsets to align text with vertical rhythm grids, enabling front-end developers to achieve pixel-perfect control over typographic elements.
 
@@ -74,7 +74,7 @@ Functions use the `font-size`, `line-height`, and (if present) `baseline-ratio` 
 
 ### `rhythm($rhythms, $offset: 0)`
 
-![rhythm](./docs/fn1.png)
+![rhythm](https://cdn.jsdelivr.net/gh/p233/rhythm-sass/docs/fn1.png)
 
 The `rhythm()` function calculates the total height of a specified number of rhythm grids. It accepts two arguments:
  
@@ -91,7 +91,7 @@ The offset unit is automatically handled by the function. If different units are
 
 ### `baseline-top($font-map, $rhythms, $offset: 0)` <br/> `rhythm-bottom($font-map, $rhythms, $offset: 0)`
 
-![rhythm](./docs/fn2.png)
+![rhythm](https://cdn.jsdelivr.net/gh/p233/rhythm-sass/docs/fn2.png)
 
 The `baseline-top()` function calculates the spacing from the top of the font's line-height to the top of the nth rhythm grid **above** the baseline. It accepts:
 
@@ -103,7 +103,7 @@ The `baseline-top()` function calculates the spacing from the top of the font's 
 
 ### `baseline-bottom($font-map, $rhythms, $offset: 0)` <br/> `rhythm-top($font-map, $rhythms, $offset: 0)`
 
-![rhythm](./docs/fn3.png)
+![rhythm](https://cdn.jsdelivr.net/gh/p233/rhythm-sass/docs/fn3.png)
 
 The `baseline-bottom()` function calculates the spacing from the bottom of the font's line-height to the bottom of the nth rhythm grid **below** the baseline. It accepts:
 
