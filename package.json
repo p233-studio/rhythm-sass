@@ -3,8 +3,12 @@
   "version": "1.0.1",
   "description": "Provides reliable vertical rhythm for web typography.",
   "main": "./src/rhythm.scss",
+  "files": [
+    "src"
+  ],
   "scripts": {
     "test": "jest",
+    "lint": "stylelint 'src/*.scss'",
     "build-examples": "./node_modules/.bin/sass ./examples/px-unit/styles.scss:./examples/px-unit/styles.css ./examples/rem-unit/styles.scss:./examples/rem-unit/styles.css --no-source-map",
     "pre-commit": "lint-staged && npm run test"
   },
@@ -25,26 +29,23 @@
   },
   "homepage": "https://github.com/p233-studio/rhythm-sass#readme",
   "devDependencies": {
-    "@p233/stylelint-config-scss": "^4.0.2",
-    "husky": "^9.1.4",
+    "@p233/stylelint-config-scss": "^4.1.0",
+    "husky": "^9.1.7",
     "jest": "^29.7.0",
     "jest-environment-node-single-context": "^29.4.0",
-    "lint-staged": "^15.2.8",
-    "prettier": "^3.3.3",
-    "sass": "^1.77.8",
-    "sass-true": "^8.0.0",
-    "stylelint": "^16.8.1"
+    "lint-staged": "^15.2.11",
+    "prettier": "^3.4.2",
+    "sass": "^1.83.0",
+    "sass-true": "^8.1.0",
+    "stylelint": "^16.12.0",
+    "stylelint-prettier": "^5.0.2"
   },
   "jest": {
     "testEnvironment": "jest-environment-node-single-context"
   },
   "lint-staged": {
     "*.scss": [
-      "prettier --write",
-      "stylelint"
+      "stylelint --fix"
     ]
-  },
-  "files": [
-    "src"
-  ]
+  }
 }

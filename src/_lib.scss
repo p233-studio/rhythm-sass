@@ -30,6 +30,7 @@
   }
 
   $_font-size: map.get($value, font-size);
+
   @if not $_font-size {
     @error "The font-size key is missing in $font-map: #{meta.inspect($value)}.";
   } @else if meta.type-of($_font-size) != number or not has-valid-unit($_font-size) {
@@ -37,6 +38,7 @@
   }
 
   $_line-height: map.get($value, line-height);
+
   @if not $_line-height {
     @error "The line-height key is missing in the $font-map: #{meta.inspect($value)}.";
   } @else if not is-valid-rhythms($_line-height) {
@@ -44,6 +46,7 @@
   }
 
   $_baseline-ratio: map.get($value, baseline-ratio);
+
   @if $_baseline-ratio and not is-valid-baseline-ratio($_baseline-ratio) {
     @error "Invalid baseline-ratio value in $font-map: #{meta.inspect($value)}. The value must be a decimal between 0 and 1 (exclusive).";
   }

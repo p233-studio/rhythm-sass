@@ -8,16 +8,19 @@
 // ------------------ //
 
 $baseline-ratio: null !default;
+
 @if not lib.is-valid-baseline-ratio($baseline-ratio) {
   @error "Invalid $baseline-ratio: #{meta.inspect($baseline-ratio)}. The value must be a decimal between 0 and 1 (exclusive).";
 }
 
 $rhythm-size: 8px !default;
+
 @if meta.type-of($rhythm-size) != number or not lib.has-valid-unit($rhythm-size) {
   @error "Invalid $rhythm-size: #{meta.inspect($rhythm-size)}. The value must be a number in an absolute length unit or the rem unit.";
 }
 
 $rem-size: 16px !default;
+
 @if meta.type-of($rem-size) != number or not lib.has-valid-unit($rem-size) {
   @error "Invalid $rem-size: #{meta.inspect($rem-size)}. The value must be a number in an absolute length unit or the rem unit.";
 }
@@ -130,11 +133,11 @@ $__config: (
     position: relative;
 
     &::after {
-      content: "";
       position: absolute;
-      z-index: 2147483647;
       inset: 0;
+      z-index: 2147483647;
       pointer-events: none;
+      content: "";
       background-image: linear-gradient(to bottom, $color $rhythm-size, transparent $rhythm-size);
       background-size: 100% ($rhythm-size * 2);
     }

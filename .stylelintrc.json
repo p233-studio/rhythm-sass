@@ -1,6 +1,6 @@
 {
-  "extends": ["@p233/stylelint-config-scss"],
+  "extends": ["@p233/stylelint-config-scss", "stylelint-prettier/recommended"],
   "rules": {
-    "max-line-length": null
+    "number-max-precision": null
   }
 }
