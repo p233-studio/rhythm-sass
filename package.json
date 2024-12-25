@@ -2,6 +2,22 @@
   "name": "rhythm-sass",
   "version": "1.0.1",
   "description": "Provides reliable vertical rhythm for web typography.",
+  "keywords": [
+    "sass",
+    "scss",
+    "vertical-rhythm",
+    "typography"
+  ],
+  "homepage": "https://github.com/p233-studio/rhythm-sass#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/p233-studio/rhythm-sass.git"
+  },
+  "bugs": {
+    "url": "https://github.com/p233-studio/rhythm-sass/issues"
+  },
+  "license": "MIT",
+  "author": "Peiwen Lu",
   "main": "./src/rhythm.scss",
   "files": [
     "src"
@@ -10,24 +26,8 @@
     "test": "jest",
     "lint": "stylelint 'src/*.scss'",
     "build-examples": "./node_modules/.bin/sass ./examples/px-unit/styles.scss:./examples/px-unit/styles.css ./examples/rem-unit/styles.scss:./examples/rem-unit/styles.css --no-source-map",
-    "pre-commit": "lint-staged && npm run test"
+    "prepare": "husky"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/p233-studio/rhythm-sass.git"
-  },
-  "keywords": [
-    "sass",
-    "scss",
-    "vertical-rhythm",
-    "typography"
-  ],
-  "author": "Peiwen Lu",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/p233-studio/rhythm-sass/issues"
-  },
-  "homepage": "https://github.com/p233-studio/rhythm-sass#readme",
   "devDependencies": {
     "@p233/stylelint-config-scss": "^4.1.0",
     "husky": "^9.1.7",
