@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/P233/rhythm-sass.git"
+    "url": "git+https://github.com/p233-studio/rhythm-sass.git"
   },
   "keywords": [
     "sass",
@@ -21,9 +21,9 @@
   "author": "Peiwen Lu",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/P233/rhythm-sass/issues"
+    "url": "https://github.com/p233-studio/rhythm-sass/issues"
   },
-  "homepage": "https://github.com/P233/rhythm-sass#readme",
+  "homepage": "https://github.com/p233-studio/rhythm-sass#readme",
   "devDependencies": {
     "@p233/stylelint-config-scss": "^4.0.2",
     "husky": "^9.1.4",
