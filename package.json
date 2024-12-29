@@ -2,6 +2,13 @@
   "name": "rhythm-sass",
   "version": "1.1.0",
   "description": "Provides reliable vertical rhythm for web typography.",
+  "main": "./src/rhythm.scss",
+  "scripts": {
+    "test": "jest",
+    "lint": "stylelint --fix 'src/*.scss'",
+    "build-examples": "./node_modules/.bin/sass ./examples/px-unit/styles.scss:./examples/px-unit/styles.css ./examples/rem-unit/styles.scss:./examples/rem-unit/styles.css --no-source-map",
+    "prepare": "husky"
+  },
   "keywords": [
     "sass",
     "scss",
@@ -18,22 +25,11 @@
   },
   "license": "MIT",
   "author": "Peiwen Lu",
-  "main": "./src/rhythm.scss",
-  "files": [
-    "src"
-  ],
-  "scripts": {
-    "test": "jest",
-    "lint": "stylelint 'src/*.scss'",
-    "build-examples": "./node_modules/.bin/sass ./examples/px-unit/styles.scss:./examples/px-unit/styles.css ./examples/rem-unit/styles.scss:./examples/rem-unit/styles.css --no-source-map",
-    "prepare": "husky"
-  },
   "devDependencies": {
     "@p233/stylelint-config-scss": "^4.1.0",
     "husky": "^9.1.7",
     "jest": "^29.7.0",
-    "jest-environment-node-single-context": "^29.4.0",
-    "lint-staged": "^15.2.11",
+    "lint-staged": "^15.3.0",
     "prettier": "^3.4.2",
     "sass": "^1.83.0",
     "sass-true": "^8.1.0",
@@ -41,11 +37,14 @@
     "stylelint-prettier": "^5.0.2"
   },
   "jest": {
-    "testEnvironment": "jest-environment-node-single-context"
+    "testEnvironment": "node"
   },
   "lint-staged": {
     "*.scss": [
       "stylelint --fix"
     ]
-  }
+  },
+  "files": [
+    "src"
+  ]
 }
