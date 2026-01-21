@@ -67,6 +67,10 @@
     @error "Invalid $offset: #{meta.inspect($value)}. The value must be a number.";
   }
 
+  @if not math.is-unitless($value) and not has-valid-unit($value) {
+    @error "Invalid $offset unit: #{meta.inspect($value)}. The unit must be an absolute length unit or rem.";
+  }
+
   @return $value;
 }
 
@@ -91,26 +95,30 @@
   }
 }
 
-@function calc-baseline-above-height($font-map, $config) {
+@function get-baseline-ratio($font-map, $config) {
+  $_font-baseline-ratio: map.get($font-map, baseline-ratio);
+
+  @return if($_font-baseline-ratio != null, $_font-baseline-ratio, map.get($config, baseline-ratio));
+}
+
+@function calc-baseline-offset($font-map, $config, $direction) {
   $_font-size: convert-font-size-to-rhythm-unit(map.get($font-map, font-size), $config);
   $_rhythms: map.get($font-map, line-height);
   $_rhythm-size: map.get($config, rhythm-size);
   $_half-leading: math.div($_rhythm-size * $_rhythms - $_font-size, 2);
-  $_baseline-ratio: map.get($font-map, baseline-ratio) or map.get($config, baseline-ratio);
-  $_height: $_half-leading + $_font-size * (1 - $_baseline-ratio);
+  $_baseline-ratio: get-baseline-ratio($font-map, $config);
+  $_ratio-multiplier: if($direction == "above", 1 - $_baseline-ratio, $_baseline-ratio);
+  $_height: $_half-leading + $_font-size * $_ratio-multiplier;
 
   @return if(math.unit($_rhythm-size) == "rem", $_height, math.round($_height));
 }
 
-@function calc-baseline-below-depth($font-map, $config) {
-  $_font-size: convert-font-size-to-rhythm-unit(map.get($font-map, font-size), $config);
-  $_rhythms: map.get($font-map, line-height);
-  $_rhythm-size: map.get($config, rhythm-size);
-  $_half-leading: math.div($_rhythm-size * $_rhythms - $_font-size, 2);
-  $_baseline-ratio: map.get($font-map, baseline-ratio) or map.get($config, baseline-ratio);
-  $_height: $_half-leading + $_font-size * $_baseline-ratio;
+@function calc-baseline-above-height($font-map, $config) {
+  @return calc-baseline-offset($font-map, $config, "above");
+}
 
-  @return if(math.unit($_rhythm-size) == "rem", $_height, math.round($_height));
+@function calc-baseline-below-depth($font-map, $config) {
+  @return calc-baseline-offset($font-map, $config, "below");
 }
 
 @function calc-height-with-offset($height, $offset) {

@@ -12,11 +12,20 @@ $config: (
 @include test-module("Test validation functions:") {
   @include test("is-valid-baseline-ratio") {
     @include assert-equal(is-valid-baseline-ratio(1), false);
+    @include assert-equal(is-valid-baseline-ratio(0), false);
+    @include assert-equal(is-valid-baseline-ratio(-0.1), false);
+    @include assert-equal(is-valid-baseline-ratio(1.5), false);
     @include assert-equal(is-valid-baseline-ratio(0.1), true);
+    @include assert-equal(is-valid-baseline-ratio(0.5), true);
+    @include assert-equal(is-valid-baseline-ratio(0.999), true);
   }
 
   @include test("is-valid-rhythms") {
     @include assert-equal(is-valid-rhythms(1), true);
+    @include assert-equal(is-valid-rhythms(0), true);
+    @include assert-equal(is-valid-rhythms(-1), true);
+    @include assert-equal(is-valid-rhythms(-5), true);
+    @include assert-equal(is-valid-rhythms(1.5), false);
     @include assert-equal(is-valid-rhythms(1px), false);
     @include assert-equal(is-valid-rhythms(""), false);
   }
@@ -45,7 +54,12 @@ $config: (
   }
 
   @include test("ensure-valid-offset") {
+    @include assert-equal(ensure-valid-offset(0), 0);
     @include assert-equal(ensure-valid-offset(0.112061), 0.112061);
+    @include assert-equal(ensure-valid-offset(1px), 1px);
+    @include assert-equal(ensure-valid-offset(-1px), -1px);
+    @include assert-equal(ensure-valid-offset(1rem), 1rem);
+    @include assert-equal(ensure-valid-offset(1pt), 1pt);
   }
 }
 
@@ -87,6 +101,30 @@ $config: (
     @include assert-equal(calc-height-with-offset(20px, -1px), 19px);
     @include assert-equal(calc-height-with-offset(2rem, 1px), calc(2rem + 1px), null, true);
     @include assert-equal(calc-height-with-offset(2rem, -1px), calc(2rem - 1px), null, true);
+    @include assert-equal(calc-height-with-offset(0, 0), 0);
+    @include assert-equal(calc-height-with-offset(-5px, 0), -5px);
+    @include assert-equal(calc-height-with-offset(2rem, 0), 2rem);
+    @include assert-equal(calc-height-with-offset(2rem, 0.5rem), 2.5rem);
+  }
+
+  @include test("get-baseline-ratio") {
+    $_font-map-with-ratio: (
+      font-size: 16px,
+      line-height: 3,
+      baseline-ratio: 0.2
+    );
+    $_font-map-without-ratio: (
+      font-size: 16px,
+      line-height: 3
+    );
+
+    @include assert-equal(get-baseline-ratio($_font-map-with-ratio, $config), 0.2);
+    @include assert-equal(get-baseline-ratio($_font-map-without-ratio, $config), 0.112061);
+  }
+
+  @include test("calc-baseline-offset") {
+    @include assert-equal(calc-baseline-offset($font-map-1, $config, "above"), 29px);
+    @include assert-equal(calc-baseline-offset($font-map-1, $config, "below"), 11px);
   }
 }
 

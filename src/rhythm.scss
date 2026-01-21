@@ -102,9 +102,9 @@ $__config: (
       @if $_function-name == "rhythm" or $_function-name == "baseline-top" {
         $_result: meta.call(meta.get-function($_function-name), $_font-map, $_function-args...);
       } @else if $_function-name == "baseline-between" {
-        $__font-map-above: lib.first($_function-args);
-        $__function-args: lib.rest($_function-args);
-        $_result: meta.call(meta.get-function($_function-name), $__font-map-above, $_font-map, $__function-args...);
+        $_font-map-above: lib.first($_function-args);
+        $_rest-args: lib.rest($_function-args);
+        $_result: meta.call(meta.get-function($_function-name), $_font-map-above, $_font-map, $_rest-args...);
       } @else {
         @error "Unsupported function #{meta.inspect($_function-name)} in #{meta.inspect($_property)}.";
       }
@@ -135,7 +135,7 @@ $__config: (
     &::after {
       position: absolute;
       inset: 0;
-      z-index: 2147483647;
+      z-index: 2147483647; // max 32-bit signed integer, ensures overlay is always on top
       pointer-events: none;
       content: "";
       background-image: linear-gradient(to bottom, $color $rhythm-size, transparent $rhythm-size);
