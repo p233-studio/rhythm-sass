@@ -98,7 +98,11 @@
 @function get-baseline-ratio($font-map, $config) {
   $_font-baseline-ratio: map.get($font-map, baseline-ratio);
 
-  @return if($_font-baseline-ratio != null, $_font-baseline-ratio, map.get($config, baseline-ratio));
+  @if map.has-key($font-map, baseline-ratio) {
+    @return $_font-baseline-ratio;
+  }
+
+  @return map.get($config, baseline-ratio);
 }
 
 @function calc-baseline-offset($font-map, $config, $direction) {
@@ -107,10 +111,19 @@
   $_rhythm-size: map.get($config, rhythm-size);
   $_half-leading: math.div($_rhythm-size * $_rhythms - $_font-size, 2);
   $_baseline-ratio: get-baseline-ratio($font-map, $config);
-  $_ratio-multiplier: if($direction == "above", 1 - $_baseline-ratio, $_baseline-ratio);
+  $_ratio-multiplier: $_baseline-ratio;
+
+  @if $direction == "above" {
+    $_ratio-multiplier: 1 - $_baseline-ratio;
+  }
+
   $_height: $_half-leading + $_font-size * $_ratio-multiplier;
 
-  @return if(math.unit($_rhythm-size) == "rem", $_height, math.round($_height));
+  @if math.unit($_rhythm-size) == "rem" {
+    @return $_height;
+  }
+
+  @return math.round($_height);
 }
 
 @function calc-baseline-above-height($font-map, $config) {

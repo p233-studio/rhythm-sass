@@ -1,6 +1,7 @@
 {
-  "extends": ["@p233/stylelint-config-scss", "stylelint-prettier/recommended"],
+  "extends": ["stylelint-config-standard-scss", "stylelint-prettier/recommended"],
   "rules": {
-    "number-max-precision": null
+    "number-max-precision": null,
+    "scss/dollar-variable-pattern": null
   }
 }

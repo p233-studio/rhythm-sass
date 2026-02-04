@@ -1,3 +1,4 @@
+@use "sass:meta";
 @use "true" as *;
 @use "font-maps" as *;
 @use "../src/rhythm" as * with (
@@ -9,11 +10,13 @@
 @include test-module("Test rhythm functions:") {
   @include test("rhythm") {
     $rhythm-size: 0.5rem !global;
+
     @include assert-equal(rhythm(5), 2.5rem);
-    @include assert-equal(rhythm(5, -1px), calc(2.5rem - 1px), null, true);
-    @include assert-equal(rhythm(5, 1px), calc(2.5rem + 1px), null, true);
+    @include assert-equal(meta.inspect(rhythm(5, -1px)), meta.inspect(calc(2.5rem - 1px)));
+    @include assert-equal(meta.inspect(rhythm(5, 1px)), meta.inspect(calc(2.5rem + 1px)));
 
     $rhythm-size: 8px !global; // reset
+
     @include assert-equal(rhythm(5), 40px);
     @include assert-equal(rhythm(5, -1px), 39px);
     @include assert-equal(rhythm(5, 1px), 41px);
